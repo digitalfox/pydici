@@ -396,7 +396,7 @@ def activities(request):
         qs = qs.filter(subsidiary=subsidiary)
     filter = ActivityFilter(request.GET, queryset=qs, request=request)
     kanban_columns = [(_("Sleeping"), filter.qs.filter(state="SLEEPING")), (_("Recently canceled"), filter.qs.recently_canceled()),
-        (_("Late"), filter.qs.late()), (_("Soon"), filter.qs.soon()), (_("Recently done"), filter.qs.recently_done()),
+        (_("Late"), filter.qs.late()), (_("Recently done"), filter.qs.recently_done()), (_("Soon"), filter.qs.soon()),
         (_("Later"), filter.qs.later())]
     data = ["kanban"]
     for column_name, activities in kanban_columns:

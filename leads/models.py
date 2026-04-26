@@ -318,13 +318,13 @@ class ActivityQuerySet(models.QuerySet):
         return self.filter(state="CANCELED", update_date__lt=date.today()-timedelta(days=30))
 
     def late(self):
-        return self.filter(Q(due_date__lt=date.today()) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
+        return self.filter(Q(due_date__lt=date.today()) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED"))
 
     def soon(self):
-        return self.filter(due_date__lt=(date.today() + timedelta(days=30)), due_date__gte=date.today(), state__in=("TODO_PLANNED", "SLEEPING"))
+        return self.filter(due_date__lt=(date.today() + timedelta(days=30)), due_date__gte=date.today(), state__in=("TODO_PLANNED"))
 
     def later(self):
-        return self.filter(due_date__gt=(date.today() + timedelta(days=30))).filter(state__in=("TODO_PLANNED", "SLEEPING"))
+        return self.filter(due_date__gt=(date.today() + timedelta(days=30))).filter(state__in=("TODO_PLANNED"))
 
 class Activity(models.Model):
     """Commercial activity"""
