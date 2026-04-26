@@ -36,9 +36,9 @@ class ActivityFilter(FilterSet):
 
     def state_filter(self, queryset, name, value):
         if value == "LATE":
-            return queryset.filter(Q(due_date__lt=date.today()) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
+            return queryset.late()
         elif value == "SOON":
-            return queryset.filter(Q(due_date__lt=(date.today() + timedelta(days=30))) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
+            return queryset.soon()
         else:
             return queryset.filter(state=value)
 

@@ -307,6 +307,24 @@ class StateProba(models.Model):
     state = models.CharField(_("State"), max_length=30, choices=Lead.STATES)
     score = models.IntegerField(_("Score"))
 
+class ActivityManager(models.Manager):
+    pass
+
+class ActivityQuerySet(models.QuerySet):
+    def recently_done(self):
+        return self.filter(state="DONE", done_date__lt=date.today()-timedelta(days=30))
+
+    def recently_canceled(self):
+        return self.filter(state="CANCELED", update_date__lt=date.today()-timedelta(days=30))
+
+    def late(self):
+        return self.filter(Q(due_date__lt=date.today()) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
+
+    def soon(self):
+        return self.filter(Q(due_date__lt=(date.today() + timedelta(days=30))) | Q(due_date__isnull=True)).filter(state__in=("TODO_PLANNED", "SLEEPING"))
+
+    def later(self):
+        return self.filter(due_date__gt=(date.today() + timedelta(days=30))).filter(state__in=("TODO_PLANNED", "SLEEPING"))
 
 class Activity(models.Model):
     """Commercial activity"""
@@ -343,6 +361,7 @@ class Activity(models.Model):
     state.db_index = True
     client_organisation = models.ForeignKey(ClientOrganisation, verbose_name=_("Client organisation"), blank=True, null=True, on_delete=models.SET_NULL)
     contact = models.ForeignKey(Contact, verbose_name=_("Contact"), blank=True, null=True, on_delete=models.SET_NULL)
+    objects = ActivityManager.from_queryset(ActivityQuerySet)()
     history = AuditlogHistoryField()
 
     def is_late(self):
