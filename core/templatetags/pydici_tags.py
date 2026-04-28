@@ -4,6 +4,7 @@ Pydici custom tags
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from datetime import date
 
 from django import template
 from django.template.loader import get_template
@@ -25,6 +26,8 @@ def call_for_current_subsidiary(context, obj, f_name):
 
 @register.simple_tag(takes_context=True)
 def consultant_monthly_staffing(context, consultant, month):
+    if month < date.today().replace(day=1):
+        return ""  # Don't show forecasting for past months. It's innaccurate.
     template = get_template("people/__consultant_monthly_staffing.html")
     staffings, total, available = consultant.monthly_staffing(month)
     if available < 0:
