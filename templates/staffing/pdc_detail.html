@@ -5,21 +5,25 @@
 {% if staffings %}
     <table class="table table-striped table-sm">
     <thead>
-        <tr><th>{% trans "Mission" %}</th><th>{% trans "Charge" %}</th></tr>
+        <tr><th>{% trans "Mission" %}</th>
+            <th>{% trans "Probability" %}</th>
+            <th>{% trans "Charge" %}</th></tr>
     </thead>
     <tbody>
     {% for staffing in staffings %}
         <tr>
-            <td>{{ staffing.mission }}</td><td>{{ staffing.charge }}</td>
+            <td>{{ staffing.mission }}</td>
+            <td>{{ staffing.mission.probability }} %</td>
+            <td>{{ staffing.charge }}</td>
         </tr>
     {% endfor %}
     </tbody>
     <tfoot>
         <tr>
-            <th>{% trans "total" %}</th><td>{{ total }}</td>
+            <th>{% trans "total" %}</th><td></td></td><td>{{ total }}</td>
         </tr>
         <tr>
-            <th>{% trans "available" %}</th><td>{{ available }}</td>
+            <th>{% trans "available" %}</th><td></td><td>{{ available }}</td>
         </tr>
     </tfoot>
     </table>
