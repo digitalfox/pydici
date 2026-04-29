@@ -4,7 +4,7 @@ Pydici leads tables
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from django.db.models import Q
+from django.db.models import Q, F
 from django.template.loader import get_template
 from django.utils.html import escape
 from django.urls import reverse
@@ -180,6 +180,7 @@ class ActivityTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableVi
         filter = ActivityFilter(self.request.GET, queryset=Activity.objects.all(), request=self.request)
         qs = filter.qs
         qs = self._filter_on_subsidiary(qs)
+        qs= qs.order_by(F("due_date").desc(nulls_last=True))
         return qs.select_related("contact", "client_organisation__company", "responsible", "subsidiary")
 
     def filter_queryset(self, qs):

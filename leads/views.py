@@ -407,7 +407,7 @@ def activities(request):
 
     return render(request, "leads/activities.html",
                   {"data_url" : reverse('leads:activity_table_DT'),
-                   "datatable_options": ''' "order": [[8, "asc"]]  ''',
+                   "datatable_options": ''' "order": [] ''',
                    "filter": filter,
                    "filter_form_helper": ActivityFilterFormHelper(),
                    "kanban_activites_data": "\n  ".join(data),
