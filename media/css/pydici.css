@@ -663,3 +663,7 @@ td a:hover {
 .kanban a:hover {
     text-decoration: underline;
 }
+
+.mermaid svg {
+  max-width: 1400px !important;
+}

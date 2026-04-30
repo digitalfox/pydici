@@ -402,8 +402,8 @@ def activities(request):
     for column_name, activities in kanban_columns:
         data.append(f"""["{column_name}"]""")
         for activity in activities:
-            activity_title = f"{activity.client_organisation or ''} {activity.contact or ''}"
-            data.append(f"""  {activity.id}["<a href='{reverse('leads:activity_detail', args=[activity.id])}' title='{activity_title}'>{activity.name}</a>"]@{{assigned: "{activity.responsible.trigramme}"}}""")
+            activity_desc = f"{activity.name} <span class='text-muted d-none d-lg-block'>({activity.client_organisation or ''} {activity.contact or ''})</span>"
+            data.append(f"""  {activity.id}["<a href='{reverse('leads:activity_detail', args=[activity.id])}'>{activity_desc}</a>"]@{{assigned: "{activity.responsible.trigramme}"}}""")
 
     return render(request, "leads/activities.html",
                   {"data_url" : reverse('leads:activity_table_DT'),

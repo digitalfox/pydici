@@ -15,6 +15,8 @@
     <h2>{% trans "All commercial activities" %}</h2>
     {% crispy filter.form filter_form_helper %}
 
+    <div class="row">
+        <div class="col-12 col-xl-11 col-xxl-10">
     <pre class="mermaid kanban">
 ---
 config:
@@ -22,6 +24,8 @@ config:
 ---
 {{ kanban_activites_data|safe }}
     </pre>
+        </div>
+    </div>
     {% include "leads/_activities_table.html" %}
 
     <a href="{% url 'leads:activity' %}" class="btn btn-primary"><i class="bi bi-plus"></i> {% trans "New commercial activity" %}</a>
