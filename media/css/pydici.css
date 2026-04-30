@@ -76,6 +76,28 @@ a.disabled-items {
     color: #888;
 }
 
+/* uncluter links style in tables, kanban and home page blocks */
+.kanban a:visited, .kanban a:link, .kanban a:active {
+    text-decoration: none;
+}
+.kanban a:hover {
+    text-decoration: underline;
+}
+
+td a:visited, td a:link, td a:active {
+    text-decoration: none;
+}
+td a:hover {
+    text-decoration: underline;
+}
+
+.pydici-block a:visited, .pydici-block a:link, .pydici-block a:active {
+    text-decoration: none;
+}
+.pydici-block a:hover {
+    text-decoration: underline;
+}
+
 /* search highlight */
 .search-highlight {
   background-color: yellow;
@@ -558,13 +580,6 @@ body {
     padding: .25rem 1rem;
 }
 
-td a:visited, td a:link, td a:active {
-    text-decoration: none;
-}
-td a:hover {
-    text-decoration: underline;
-}
-
 /* override bootstrap datepicker default */
 .datepicker {
     padding: .375rem .75rem; // bootstrap default
@@ -655,13 +670,6 @@ td a:hover {
 
 .filter-submit-btn {
     margin-top: 28px; /* I would have prefered a vertical alignment...*/
-}
-
-.kanban a:visited, a:link, a:active {
-    text-decoration: none;
-}
-.kanban a:hover {
-    text-decoration: underline;
 }
 
 .mermaid svg {
