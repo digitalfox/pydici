@@ -16,11 +16,15 @@
     {% crispy filter.form filter_form_helper %}
 
     <div class="row">
-        <div class="col-12 col-xl-11 col-xxl-10">
+        <div class="col-12">
     <pre class="mermaid kanban">
 ---
 config:
     theme: 'forest'
+    kanban:
+        sectionWidth: 300
+    themeVariables:
+        fontSize: 20px
 ---
 {{ kanban_activites_data|safe }}
     </pre>
