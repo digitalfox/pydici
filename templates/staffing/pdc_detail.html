@@ -12,7 +12,7 @@
     <tbody>
     {% for staffing in staffings %}
         <tr>
-            <td>{{ staffing.mission }}</td>
+            <td><a href="{% url 'staffing:mission_home' staffing.mission.id %}#goto_tab-staffing">{{ staffing.mission }}</a></td>
             <td>{{ staffing.mission.probability }} %</td>
             <td>{{ staffing.charge }}</td>
         </tr>
