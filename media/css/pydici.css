@@ -672,6 +672,6 @@ body {
     margin-top: 28px; /* I would have prefered a vertical alignment...*/
 }
 
-.mermaid svg {
+.kanban svg {
   max-width: 1600px !important;
 }
