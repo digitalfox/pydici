@@ -3,12 +3,15 @@
 $(document).ready(function(){
     // In bootstrap modal, we need to attach select2 to modal instead of body
     $('#{{ modal_id }}').on('shown.bs.modal', function (e) {
-      $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto", "dropdownParent": $('#{{ modal_id }}')});
+      setTimeout(() => {
+        $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto", "dropdownParent": $('#{{ modal_id }}')});
+      }, 200);
     });
 
     // re-activate django-select after modal is closed
     $('#{{ modal_id }}').on('hidden.bs.modal', function (e) {
-        $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto"});
+      $("#{{ modal_id }}").html("...");
+      $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto"});
     });
 });
 </script>
