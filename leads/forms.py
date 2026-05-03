@@ -153,6 +153,14 @@ class LeadForm(PydiciCrispyModelForm):
 
     def clean_sales(self):
         """Ensure sale amount is defined at lead when commercial proposition has been sent"""
+        if self.cleaned_data["sales"]:
+            # If price is defined, check that the total mission price matches the sales amount
+            total = 0
+            for mission in self.instance.mission_set.all():
+                if mission.price:
+                    total += mission.price
+            if total > self.cleaned_data["sales"]:
+                raise ValidationError(_("Lead sales can't be less than its missions amount"))
         if self.cleaned_data["sales"] or self.data["state"] in ('QUALIF', 'WRITE_OFFER', 'SLEEPING', 'LOST', 'FORGIVEN'):
             # Sales is defined or we are in early step, nothing to say
             return self.cleaned_data["sales"]
