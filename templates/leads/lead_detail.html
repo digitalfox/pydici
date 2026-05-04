@@ -50,7 +50,7 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="lead-tabs">
         <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-description"><i class="bi bi-house"></i> <div class="d-none d-md-inline">{% trans "Description" %}</div></button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions"><i class="bi bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Missions" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions" data-tab-url="{% url 'staffing:lead_missions' lead.id %}"><i class="bi bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Missions" %}</div></button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-billing" data-tab-url="{% url 'billing:lead_billing' lead.id|unlocalize %}"><i class="bi bi-calculator"></i> <div class="d-none d-md-inline">{% trans "Billing" %}</div></button></li>
         {% if enable_doc_tab %}<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-documents" data-tab-url="{% url 'leads:lead_documents' lead.id|unlocalize %}"><i class="bi bi-file-earmark-text"></i> <div class="d-none d-md-inline">{% trans "Documents" %}</div></button></li>{% endif %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'leads:lead_pivotable' lead.id|unlocalize %}"><i class="bi bi-graph-up"></i> <div class="d-none d-md-inline">{% trans "Reporting" %}</div></button></li>
@@ -193,86 +193,7 @@
         </div>
     </div> {# End of description tab #}
 
-    <div id="tab-missions" class="tab-pane fade" role="tabpanel">
-        {% if lead.mission_set.count %}
-            <div class="row py-2"><h2>{% trans "Missions of this lead:" %}</h2></div>
-            <div class="row py-2">
-            <div class="table-responsive">
-            <table class="table table-hover table-striped table-sm">
-            <tr>
-                <th>{% trans "Mission" %}</th>
-                <th>{% trans "id" %}</th>
-                <th class="d-none d-sm-table-cell">{% trans "Start" %}</th>
-                <th class="d-none d-sm-table-cell">{% trans "End" %}</th>
-                <th class="d-none d-sm-table-cell">{% trans "Forecast" %}</th>
-                <th class="d-none d-sm-table-cell">{% trans "Done days" %}</th>
-                <th class="d-none d-sm-table-cell">{% trans "Done work (k€)" %}</th>
-                <th>{% trans "Sold (k€)" %}</th>
-                <th>{% trans "Billing mode" %}</th>
-                <th class="d-none d-sm-table-cell">{% trans "product" %}</th>
-            </tr>
-            {% for mission in lead.mission_set.all %}
-            <tr>
-                <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
-                <td>{{ mission.mission_id }}</td>
-                <td class="d-none d-sm-table-cell">{{ mission.start_date|default_if_none:mission.staffing_start_date|default_if_none:mission.timesheet_start_date|default_if_none:'-' }}</td>
-                <td class="d-none d-sm-table-cell">{{ mission.end_date|default_if_none:mission.staffing_end_date|default_if_none:mission.staffing_end_date|default_if_none:'-' }}</td>
-                <td class="d-none d-sm-table-cell">
-                {% if mission.active %}
-                    {% if mission.no_more_staffing_since %}
-                        <i class="bi bi-exclamation-triangle" style="color:red"></i>
-                    {% else %}
-                        <i class="bi bi-check" style="color:green"></i>
-                    {% endif %}
-                {% else %}
-                    -
-                {% endif %}
-                </td>
-                <td class="d-none d-sm-table-cell">{{ mission.done_work_k.0 }}</td>
-                <td class="d-none d-sm-table-cell">{{ mission.done_work_k.1|floatformat }}</td>
-                <td>{{ mission.price|default:_("To be defined") }}</td>
-                <td>{{ mission.get_billing_mode_display }}</td>
-                <td class="d-none d-sm-table-cell">{% if mission.nature == "PROD" %}{{ mission.marketing_product.description|default:_("To be defined") }}{% endif %}</td>
-            </tr>
-            {% endfor %}
-            {% if lead.mission_set.count != 1 %}
-                <tr>
-                    <th>{% trans "Unattributed" %}</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>{{ lead.unattributed }}</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th>{% trans "Total" %}</th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th>{{ lead.done_work_k.0 }}</th>
-                    <th>{{ lead.done_work_k.1|floatformat }}</th>
-                    <th>{{ lead.sales }}</th>
-                    <th></th>
-                    <th></th>
-                </tr>
-            {% endif %}
-            </table>
-            </div>
-            </div>
-            {% if perms.staffing.add_mission %}
-                <a class="btn btn-primary" href="{% url 'staffing:create_new_mission_from_lead' lead.id|unlocalize %}">{% trans "Create a new mission for this lead" %}</a>
-            {% endif %}
-        {% else %}
-            <br/>
-            <div class="alert alert-info">{% trans "A mission is created once a commercial proposal has been sent." %}</div>
-        {% endif %}
-
-    </div> {# end of tab missions #}
+    <div id="tab-missions" class="tab-pane fade" role="tabpanel"></div>
 
 
     <div id="tab-billing" class="tab-pane fade" role="tabpanel"></div>

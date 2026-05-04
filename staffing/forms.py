@@ -31,7 +31,7 @@ from people.models import Consultant, ConsultantProfile
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
-from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string
+from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string, clean_mission_price
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT, OPTIM_NEWBIE_LIMIT
 from core.utils import nextMonth
 
@@ -387,27 +387,7 @@ class MissionForm(PydiciCrispyModelForm):
 
     def clean_price(self):
         """Ensure mission price don't exceed remaining lead amount"""
-        if not self.cleaned_data["price"]:
-            # Don't check anything if not price given
-            return self.cleaned_data["price"]
-
-        if not self.instance.lead:
-            raise ValidationError(_("Cannot add price to mission without lead"))
-
-        if not self.instance.lead.sales:
-            raise ValidationError(_("Mission's lead has no sales price. Define lead sales price."))
-
-        total = 0  # Total price for all missions except current one
-        for mission in self.instance.lead.mission_set.exclude(id=self.instance.id):
-            if mission.price:
-                total += mission.price
-
-        remaining = self.instance.lead.sales - total
-        if self.cleaned_data["price"] > remaining and self.instance.management_mode != "ELASTIC":
-            raise ValidationError(_("Only %s k€ are remaining on this lead. Define a lower price" % remaining))
-
-        # No error, we return data as is
-        return self.cleaned_data["price"]
+        return clean_mission_price(self.instance, self.cleaned_data["price"])
 
     def _clean_start_end_date(self, field):
         if self.cleaned_data.get("start_date") and self.cleaned_data.get("end_date"):

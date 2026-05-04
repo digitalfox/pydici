@@ -19,6 +19,8 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^missions/all$', v.missions, {'only_active': False}, name='all_missions'),
                   re_path(r'^missions/consultant/(?P<consultant_id>\d+)/$', v.consultant_missions, name="consultant_missions"),
                   re_path(r'^missions/all/consultant/(?P<consultant_id>\d+)/$', v.consultant_missions, {'only_active': False}, name="consultant_all_missions"),
+                  re_path(r'^missions/lead/(?P<lead_id>\d+)/$', v.lead_missions, name='lead_missions'),
+                  re_path(r'^missions/lead/(?P<lead_id>\d+)/(?P<mission_id>\d+)/$', v.lead_missions, name='lead_missions'),
                   re_path(r'^mission/(?P<mission_id>\d+)/$', v.mission_home, name="mission_home"),
                   re_path(r'^mission/update/$', v.mission_update, name="mission_inline_update"),
                   re_path(r'^mission/(?P<pk>\d+)/update$', v.MissionUpdate.as_view(), name='mission_update'),

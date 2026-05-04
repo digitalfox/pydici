@@ -15,6 +15,7 @@ from django.db.models import Sum
 from django.utils.translation import gettext as _
 from django.utils import formats
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 
 from staffing.models import Timesheet, Mission, LunchTicket, Holiday, Staffing
 from core.utils import month_days, nextMonth, daysOfMonth, to_int_or_round
@@ -431,3 +432,27 @@ def compute_mission_consultant_rates(mission):
         # No consultant or no objective on mission timeframe
         objective_dates = []
     return objective_dates, rates
+
+def clean_mission_price(mission, price):
+    """Separate utils to check mission price to ease reusability for inline htmx edit outside of forms"""
+    if not price:
+        # Don't check anything if not price given
+        return price
+
+    if not mission.lead:
+        raise ValidationError(_("Cannot add price to mission without lead"))
+
+    if not mission.lead.sales:
+        raise ValidationError(_("Mission's lead has no sales price. Define lead sales price."))
+
+    total = 0  # Total price for all missions except current one
+    for m in mission.lead.mission_set.exclude(id=mission.id):
+        if m.price:
+            total += m.price
+
+    remaining = mission.lead.sales - total
+    if price > remaining and mission.management_mode != "ELASTIC":
+        raise ValidationError(_("Only %s k€ are remaining on this lead. Define a lower price" % remaining))
+
+    # No error, we return data as is
+    return price

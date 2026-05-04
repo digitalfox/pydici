@@ -1,0 +1,101 @@
+{# Fragment template to display missions of a lead #}
+{# context: lead #}
+
+{% load i18n %}
+{% load l10n %}
+
+<div id="lead_missions" hx-target="this" hx-swap="outerHTML">
+    {% if error %}
+    <div class="row my-2 mx-1">
+    <div class="alert alert-danger">{{ error }}</div>
+    </div>
+    {% endif %}
+
+{% if lead.mission_set.count %}
+    <div class="row py-2"><h2>{% trans "Missions of this lead:" %}</h2></div>
+    <div class="row py-2">
+    <div class="table-responsive">
+    <table class="table table-hover table-striped table-sm">
+    <tr>
+        <th>{% trans "Mission" %}</th>
+        <th>{% trans "id" %}</th>
+        <th class="d-none d-sm-table-cell">{% trans "Start" %}</th>
+        <th class="d-none d-sm-table-cell">{% trans "End" %}</th>
+        <th class="d-none d-sm-table-cell">{% trans "Forecast" %}</th>
+        <th class="d-none d-sm-table-cell">{% trans "Done days" %}</th>
+        <th class="d-none d-sm-table-cell">{% trans "Done work (k€)" %}</th>
+        <th>{% trans "Sold (k€)" %}</th>
+        <th>{% trans "Billing mode" %}</th>
+        <th class="d-none d-sm-table-cell">{% trans "product" %}</th>
+    </tr>
+    {% for mission in lead.mission_set.all %}
+    <tr>
+        <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
+        <td>{{ mission.mission_id }}</td>
+        <td class="d-none d-sm-table-cell">{{ mission.start_date|default_if_none:mission.staffing_start_date|default_if_none:mission.timesheet_start_date|default_if_none:'-' }}</td>
+        <td class="d-none d-sm-table-cell">{{ mission.end_date|default_if_none:mission.staffing_end_date|default_if_none:mission.staffing_end_date|default_if_none:'-' }}</td>
+        <td class="d-none d-sm-table-cell">
+        {% if mission.active %}
+            {% if mission.no_more_staffing_since %}
+                <i class="bi bi-exclamation-triangle" style="color:red"></i>
+            {% else %}
+                <i class="bi bi-check" style="color:green"></i>
+            {% endif %}
+        {% else %}
+            -
+        {% endif %}
+        </td>
+        <td class="d-none d-sm-table-cell">{{ mission.done_work_k.0 }}</td>
+        <td class="d-none d-sm-table-cell">{{ mission.done_work_k.1|floatformat }}</td>
+        <td>{% if edit and editable_mission and editable_mission.id == mission.id %}
+            <input id="price" type="number"  name="price" value="{{ editable_mission.price|default:_('To be defined') }}" class="text-end"
+                                     hx-post="{% url 'staffing:lead_missions' lead.id mission.id %}" autofocus />
+        {% else %}
+            <a href="#" hx-get="{% url 'staffing:lead_missions' lead.id mission.id %}">{{ mission.price|default:_("To be defined") }}</a>
+        {% endif %}
+        </td>
+        <td>{{ mission.get_billing_mode_display }}</td>
+        <td class="d-none d-sm-table-cell">{% if mission.nature == "PROD" %}{{ mission.marketing_product.description|default:_("To be defined") }}{% endif %}</td>
+    </tr>
+    {% endfor %}
+    {% if lead.mission_set.count != 1 %}
+        <tr>
+            <th>{% trans "Unattributed" %}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>{{ lead.unattributed }}</th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <th>{% trans "Total" %}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th>{{ lead.done_work_k.0 }}</th>
+            <th>{{ lead.done_work_k.1|floatformat }}</th>
+            <th>{{ lead.sales }}</th>
+            <th></th>
+            <th></th>
+        </tr>
+    {% endif %}
+    </table>
+    </div>
+    </div>
+    {% if perms.staffing.add_mission %}
+        <a class="btn btn-primary" href="{% url 'staffing:create_new_mission_from_lead' lead.id|unlocalize %}">{% trans "Create a new mission for this lead" %}</a>
+    {% endif %}
+{% else %}
+    <br/>
+    <div class="alert alert-info">{% trans "A mission is created once a commercial proposal has been sent." %}</div>
+{% endif %}
+<script type="text/javascript">
+    $(document).ready(function() { htmx.process(document.body); });
+</script>
+
+</div>

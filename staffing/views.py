@@ -16,9 +16,10 @@ from math import sqrt
 from django.core.cache import cache
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from django.forms.models import inlineformset_factory
-from django.forms import formset_factory
+from django.forms import formset_factory, ValidationError
 from django.utils.translation import gettext as _
 from django.urls import reverse, reverse_lazy
 from django.db.models import Sum, Count, Q
@@ -52,7 +53,7 @@ from core.decorator import pydici_non_public, pydici_feature, PydiciNonPublicdMi
 from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAndLog, \
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
     timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity, compute_mission_consultant_rates, \
-    updateHolidaysStaffing
+    updateHolidaysStaffing, clean_mission_price
 from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT
@@ -274,6 +275,32 @@ def consultant_missions(request, only_active=True, consultant_id=None):
                                             ''',
                    "user": request.user})
 
+
+@pydici_non_public
+def lead_missions(request, lead_id, mission_id=None):
+    """List of missions for a lead and inline mission price update"""
+    lead = get_object_or_404(Lead, pk=lead_id)
+    error = None
+    if mission_id:
+        editable_mission = get_object_or_404(Mission, pk=mission_id)
+    else:
+        editable_mission = None
+    edit = True
+    if request.method == "POST" and editable_mission:
+        if user_has_feature(request.user, "staffing"):
+            try:
+                value = clean_mission_price(editable_mission, float(request.POST["price"]))
+                editable_mission.price = value
+                editable_mission.save()
+                edit = False
+            except ValueError as e:
+                error = str(e)
+            except ValidationError as e:
+                error = e.message
+        else:
+            error = _("You don't have the right to update mission price")
+
+    return render(request, "staffing/_lead_missions.html", {"lead": lead, "edit": edit, "editable_mission": editable_mission, "error": error})
 
 @pydici_non_public
 @pydici_feature("staffing_mass")

@@ -34,7 +34,7 @@
         <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home"><i class="bi bi-house"></i> <div class="d-none d-md-inline">{% trans "Description" %}</div></button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants" data-tab-url="{% url 'staffing:mission_consultants' mission.id %}"><i class="bi bi-person"></i> <div class="d-none d-md-inline">{% trans "Consultants" %}</div></button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><i class="bi bi-envelope"></i> <div class="d-none d-md-inline">{% trans "Contacts" %}</div></button></li>
-        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-other-missions" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Other missions" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-other-missions" data-tab-url="{% url 'staffing:lead_missions' mission.lead.id %}" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Other missions" %}</div></button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><i class="bi bi-clock"></i> <div class="d-none d-md-inline">{% trans "Timesheet" %}</div></button></li>
         {% if mission.active %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><i class="bi bi-eye"></i> <div class="d-none d-md-inline">{% trans "Forecast staffing" %}</div></button></li>
@@ -119,7 +119,7 @@
                             </tr>
                         {% endif %}
                         <tr>
-                            <th>{% trans "Sold" %}</th><td> {{ mission.price }} k€</td>
+                            <th>{% trans "Sold" %}</th><td> {{ mission.price | default_if_none:_("To be defined") }} k€</td>
                         </tr>
                         <tr>
                             <th>{% trans "Billing mode" %}</th><td><div  id="billing_mode-{{ mission.id|unlocalize }}" style="display:inline" class='jeditable-mission-update'>{{ mission.get_billing_mode_display|default:_("To be defined") }}</div></td>
@@ -161,42 +161,7 @@
 
     <div id="tab-contacts" class="tab-pane fade" role="tabpanel"></div>
 
-    <div id="tab-other-missions" class="tab-pane fade" role="tabpanel">
-        {% if mission.sister_missions %}
-        <h2 class="mt-2">{% trans "Other missions linked to this lead" %}</h2>
-        <div class="table-responsive">
-        <table class="table table-striped table-sm">
-        <tr>
-	        <th>{% trans "Mission" %}</th>
-	        <th>{% trans "id" %}</th>
-	        <th>{% trans "Done days" %}</th>
-	        <th>{% trans "Done work (k€)" %}</th>
-	        <th>{% trans "Sold (k€)" %}</th>
-	        <th>{% trans "Billing mode" %}</th>
-            <th>{% trans "product" %}</th>
-        </tr>
-        {% for sister_mission in mission.sister_missions %}
-        <tr>
-	        <td><a href="{% url 'staffing:mission_home' sister_mission.id %}">{{ sister_mission }}</a></td>
-	        <td>{{ sister_mission.mission_id }}</td>
-	        <td>{{ sister_mission.done_work_k.0 }}</td>
-	        <td>{{ sister_mission.done_work_k.1|floatformat }}</td>
-	        <td>{{ sister_mission.price|default:_("To be defined") }}</td>
-	        <td>{{ sister_mission.get_billing_mode_display }}</td>
-            <td>{% if sister_mission.nature == "PROD" %}{{ sister_mission.marketing_product.description|default:_("To be defined") }}{% endif %}</td>
-        </tr>
-        {% endfor %}
-        </table>
-        </div>
-        {% else %}
-            <script type="text/javascript">
-            // Disable other mission tabs
-            $(document).ready(function() {
-                $('#tabheader-other-missions').hide();
-            });
-            </script>
-        {% endif %}
-    </div>
+    <div id="tab-other-missions" class="tab-pane fade" role="tabpanel"></div>
 
     <div id="tab-timesheet" class="tab-pane fade" role="tabpanel"></div>
 
