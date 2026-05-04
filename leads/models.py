@@ -312,7 +312,7 @@ class ActivityManager(models.Manager):
 
 class ActivityQuerySet(models.QuerySet):
     def recently_done(self):
-        return self.filter(state="DONE", done_date__lt=date.today()-timedelta(days=30))
+        return self.filter(state="DONE", done_date__gt=date.today()-timedelta(days=30))
 
     def recently_canceled(self):
         return self.filter(state="CANCELED", update_date__lt=date.today()-timedelta(days=30))
