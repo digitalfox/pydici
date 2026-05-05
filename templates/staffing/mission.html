@@ -34,7 +34,9 @@
         <li class="active"><button class="nav-link active" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-home"><i class="bi bi-house"></i> <div class="d-none d-md-inline">{% trans "Description" %}</div></button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-consultants" data-tab-url="{% url 'staffing:mission_consultants' mission.id %}"><i class="bi bi-person"></i> <div class="d-none d-md-inline">{% trans "Consultants" %}</div></button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-contacts" data-tab-url="{% url 'staffing:mission_contacts' mission.id %}"><i class="bi bi-envelope"></i> <div class="d-none d-md-inline">{% trans "Contacts" %}</div></button></li>
+        {% if mission.lead %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-other-missions" data-tab-url="{% url 'staffing:lead_missions' mission.lead.id %}" id="tabheader-other-missions"><i class="bi bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Other missions" %}</div></button></li>
+        {% endif %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-timesheet" data-tab-url="{% url 'staffing:mission_timesheet' mission.id %}"><i class="bi bi-clock"></i> <div class="d-none d-md-inline">{% trans "Timesheet" %}</div></button></li>
         {% if mission.active %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-staffing" data-tab-url="{% url 'staffing:mission_staffing' mission.id %}"><i class="bi bi-eye"></i> <div class="d-none d-md-inline">{% trans "Forecast staffing" %}</div></button></li>
