@@ -95,7 +95,7 @@
                         {% regroup detail.list by month as mission_detail_list %}
                         {% for mission_detail in mission_detail_list %}
                             <tbody style="page-break-inside: avoid;">
-                            <tr><td class="noborder"><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td></tr>
+                            <tr><td><strong>{{ mission_detail.grouper| date:"F Y" | default_if_none:"" }}</strong></td><td colspan=5></td></tr>
                             {% for item in mission_detail.list %}
                                 <tr>
                                     {% if item.mission.billing_mode == "TIME_SPENT" %}
