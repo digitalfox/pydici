@@ -10,7 +10,6 @@ $(document).ready(function(){
 
     // re-activate django-select after modal is closed
     $('#{{ modal_id }}').on('hidden.bs.modal', function (e) {
-      $("#{{ modal_id }}").html("...");
       $('.django-select2').djangoSelect2({ "theme": "bootstrap-5", "width": "auto"});
     });
 });

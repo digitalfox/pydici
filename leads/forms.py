@@ -112,6 +112,7 @@ class LeadForm(PydiciCrispyModelForm):
                                                           hx-get="%s"
                                                           hx-target="#clientModal"
                                                           hx-trigger="click"
+                                                          hx-on:htmx:before-request="$('#clientModal').html('...');"
                                                           hx-on:htmx:after-request="$('#companyForm').hide();$('#organisationForm').hide();$('#contactForm').hide()"
                                                           data-bs-toggle="modal"
                                                           data-bs-target="#clientModal"
@@ -135,6 +136,7 @@ class LeadForm(PydiciCrispyModelForm):
                                                                                """<button type="button"
                                                                                    hx-get="%s"
                                                                                    hx-target="#businessbrokerModal"
+                                                                                   hx-on:htmx:before-request="$('#businessbrokerModal').html('...');"
                                                                                    hx-trigger="click"
                                                                                    data-bs-toggle="modal"
                                                                                    data-bs-target="#businessbrokerModal"
@@ -220,6 +222,7 @@ class ActivityForm(PydiciCrispyModelForm):
                                 hx-get="%s"
                                 hx-target="#businessbrokerModal"
                                 hx-trigger="click"
+                                hx-on:htmx:before-request="$('#businessbrokerModal').html('...');"
                                 data-bs-toggle="modal"
                                 data-bs-target="#businessbrokerModal"
                                 class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % reverse("crm:businessbroker_popup")
@@ -236,6 +239,7 @@ class ActivityForm(PydiciCrispyModelForm):
                                 hx-target="#organisationModal"
                                 hx-trigger="click"
                                 hx-on:htmx:after-request="$('#companyForm').hide()"
+                                hx-on:htmx:before-request="$('#organisationModal').html('...');"
                                 data-bs-toggle="modal"
                                 data-bs-target="#organisationModal"
                                 class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % reverse("crm:client_organisation_popup")
@@ -248,6 +252,7 @@ class ActivityForm(PydiciCrispyModelForm):
                                 hx-get="%s"
                                 hx-target="#contactModal"
                                 hx-trigger="click"
+                                hx-on:htmx:before-request="$('#contactModal').html('...');"
                                 data-bs-toggle="modal"
                                 data-bs-target="#contactModal"
                                 class="btn btn-primary"><i class='bi bi-plus'></i></button>""" % reverse("crm:contact_popup")
