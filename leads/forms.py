@@ -153,7 +153,7 @@ class LeadForm(PydiciCrispyModelForm):
 
     def clean_sales(self):
         """Ensure sale amount is defined at lead when commercial proposition has been sent"""
-        if self.cleaned_data["sales"]:
+        if self.cleaned_data["sales"] and self.instance.id:
             # If price is defined, check that the total mission price matches the sales amount
             total = 0
             for mission in self.instance.mission_set.all():
