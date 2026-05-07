@@ -10,7 +10,6 @@
 
 {% block content %}
     <div class="row mt-3">
-        <h1 class="text-center">{% trans "Commercial activity" %}</h1>
         <div hx-get="{% url 'leads:graph_leads_bar' %}?{{scope_current_filter}}" hx-trigger="load"><div class="loader m-3"></div></div>
     </div>
 
