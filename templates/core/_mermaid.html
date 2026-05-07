@@ -1,0 +1,11 @@
+    <script src="{{ MEDIA_URL }}js/mermaid-11.14.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+                    mermaid.run({
+                        querySelector: '.mermaid'
+                    });
+                    document.querySelectorAll('.mermaid').forEach(el => {
+                        el.style.opacity = '1';
+                    });
+        });
+    </script>

@@ -686,3 +686,9 @@ body {
 .kanban svg {
   max-width: 1600px !important;
 }
+
+/* Hide mermaid source until rendered */
+.mermaid {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
