@@ -32,6 +32,8 @@ from people.models import Consultant, RateObjective
 
 objectives = csv.reader(open(sys.argv[1], "r"))
 
+start = datetime.strptime(sys.argv[2], "%d/%m/%Y")
+
 for line in objectives:
     if not line[0] or line[0]=="Consultant":
         continue
@@ -40,9 +42,7 @@ for line in objectives:
     except:
         print(f"Warning, no consultant for {line[0]}")
         continue
-    start = datetime.strptime(line[21], "%Y-%m-%d")
     prod_rate = float(line[10].strip("%"))
     daily_rate = int(line[7])
     RateObjective.objects.get_or_create(consultant=c, start_date=start, rate=daily_rate, rate_type="DAILY_RATE")
     RateObjective.objects.get_or_create(consultant=c, start_date=start, rate=prod_rate, rate_type="PROD_RATE")
-
