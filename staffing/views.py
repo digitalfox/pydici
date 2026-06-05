@@ -322,6 +322,8 @@ def mass_staffing(request):
                     consultants = consultants.filter(company=subsidiary)
             if form.cleaned_data["profiles"]:
                 consultants = Consultant.objects.filter(active=True, profil__in=form.cleaned_data["profiles"])
+                if subsidiary:
+                    consultants = consultants.filter(company=subsidiary)
             if form.cleaned_data["consultants"]:
                 # Use selected consultants only
                 consultants = form.cleaned_data["consultants"]
