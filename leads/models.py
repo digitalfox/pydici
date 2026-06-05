@@ -162,6 +162,23 @@ class Lead(models.Model):
         days, amount = self.done_work()
         return days, amount / 1000
 
+    def forecasted_work(self):
+        """compute forecasted work for all missions of this lead
+        @return: (forecasted work in days, forecasted work in euros)"""
+        days = 0
+        amount = 0
+        for mission in self.mission_set.all():
+            mDays, mAmount = mission.forecasted_work()
+            days += mDays
+            amount += mAmount
+
+        return days, amount
+
+    def forecasted_work_k(self):
+        """Same as forecasted_work, but with amount in keur"""
+        days, amount = self.forecasted_work()
+        return days, amount / 1000
+
     def unattributed(self):
         """Returns non attributed amount to missions. ie. sales price minus all missions amount"""
         unused = 0
