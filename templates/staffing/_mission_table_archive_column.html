@@ -8,7 +8,7 @@
             class="btn btn-primary btn-sm"
             hx-post="{% url 'staffing:deactivate_mission' row.id %}"
             hx-swap="outerHTML">
-        {% trans "Archive" %}
+        <i class="bi bi-archive"></i> {% trans "Archive" %}
     </button>
 {% else %}
     {{ row.archived_date|date:"j F Y" }}

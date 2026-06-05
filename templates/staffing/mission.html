@@ -63,7 +63,7 @@
                                {% if mission.lead %}<strong>{% trans "Still to be billed for this lead: " %}{{ mission.lead.still_to_be_billed|floatformat:-2 }} €. </strong>{% endif %}
                                 <button hx-post="{% url 'staffing:deactivate_mission' mission.id %}"
                                         hx-target="#mission_no_staffing_warning"
-                                   class="btn btn-primary">{% trans "Archive this mission" %}</button>
+                                   class="btn btn-primary"><i class="bi bi-archive"></i> {% trans "Archive this mission" %}</button>
                            </div>
                        </div>
                    {% else %}
@@ -81,7 +81,7 @@
                            </div></div>
                    {% endif %}
              {% else %}
-                    <div class="col-md-6"><div class="alert alert-info">{% trans "This mission is archived" %}</div></div>
+                    <div class="col-md-6"><div class="alert alert-info"><i class="bi bi-archive"></i> {% trans "This mission is archived" %}</div></div>
              {% endif %}
 
             {% include "staffing/_check_prod_mission.html" %}

@@ -30,7 +30,7 @@
     </tr>
     {% for mission in lead.mission_set.all %}
     <tr>
-        <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a></td>
+        <td><a href="{% url 'staffing:mission_home' mission.id %}">{{ mission }}</a>{% if not mission.active %} <i class="bi bi-archive" title="{% trans 'archived' %}"></i>{% endif %}</td>
         <td>{{ mission.mission_id }}</td>
         <td class="d-none d-sm-table-cell">{{ mission.start_date|default_if_none:mission.staffing_start_date|default_if_none:mission.timesheet_start_date|default_if_none:'-' }}</td>
         <td class="d-none d-sm-table-cell">{{ mission.end_date|default_if_none:mission.staffing_end_date|default_if_none:mission.staffing_end_date|default_if_none:'-' }}</td>
