@@ -22,7 +22,7 @@ from django.contrib.contenttypes.models import ContentType
 from people.models import Consultant
 from crm.models import Company
 from crm.utils import get_subsidiary_from_session
-from staffing.models import Holiday, Mission, Timesheet, FinancialCondition
+from staffing.models import PublicHoliday, Mission, Timesheet, FinancialCondition
 from core.decorator import pydici_non_public, pydici_subcontractor, pydici_feature
 from core.utils import working_days, previousMonth, nextMonth, COLORS, user_has_feature
 from people.utils import subcontractor_is_user, can_manage_tags
@@ -71,7 +71,7 @@ def consultant_detail(request, consultant_id):
         # Identify staled missions that may need new staffing or archiving
         staled_missions = [m for m in missions.filter(Q(end_date__lt=date.today()) | Q(end_date__isnull=True)) if m.no_more_staffing_since()]
         # Timesheet donut data
-        holidays = [h.day for h in Holiday.objects.all()]
+        holidays = [h.day for h in PublicHoliday.objects.all()]
         month_days = working_days(month, holidays, upToToday=False)
         done_days = consultant.done_days()
         late = working_days(month, holidays, upToToday=True) - done_days

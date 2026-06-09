@@ -498,13 +498,13 @@ class Mission(models.Model):
         verbose_name = _("Mission")
 
 
-class Holiday(models.Model):
+class PublicHoliday(models.Model):
     """List of public and enterprise specific holidays"""
     day = models.DateField(_("Date"))
     description = models.CharField(_("Description"), max_length=200)
 
     class Meta:
-        verbose_name = _("Holiday")
+        verbose_name = _("Public Holiday")
 
 
 class Staffing(models.Model):

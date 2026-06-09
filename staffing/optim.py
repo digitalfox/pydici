@@ -16,7 +16,7 @@ from django.utils.html import escape
 from django.db import transaction
 
 from core.utils import working_days, to_int_or_round
-from staffing.models import Holiday, Staffing
+from staffing.models import PublicHoliday, Staffing
 
 OPTIM_NEWBIE_LIMIT = 2
 OPTIM_NEWBIE_SENIOR_LIMIT = 3
@@ -323,7 +323,7 @@ def compute_consultant_freetime(consultants, missions, months, projections="full
     """Compute freetime except for missions we want to plan
     projections: none, balanced or full. Similar to pdc review concept. Use mission probability"""
     freetime = {}
-    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.all().values_list("day", flat=True)
     wdays = {month[0]: working_days(month[0], holidays_days) for month in months}
     for consultant in consultants:
         freetime[consultant.trigramme] = {}

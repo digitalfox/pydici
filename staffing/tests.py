@@ -21,7 +21,7 @@ from django.forms import inlineformset_factory
 from staffing import utils
 from leads.models import Lead
 from staffing.forms import MissionStaffingInlineFormset, StaffingForm
-from staffing.models import Mission, Staffing, Timesheet, FinancialCondition, Holiday
+from staffing.models import Mission, Staffing, Timesheet, FinancialCondition, PublicHoliday
 from staffing.optim import solve_pdc, display_solver_solution
 from people.models import Consultant, RateObjective
 from core.utils import previousMonth, nextMonth
@@ -168,8 +168,8 @@ class StaffingViewsTest(TestCase):
         h2 = Mission(nature="HOLIDAYS", description="holiday 2", subsidiary=c1.company)
         h2.save()
         # inject some public holiday
-        Holiday(day=date(2023, 3, 14)).save()
-        Holiday(day=date(2023, 3, 24)).save()
+        PublicHoliday(day=date(2023, 3, 14)).save()
+        PublicHoliday(day=date(2023, 3, 24)).save()
         # create some holiday timesheet on this month
         Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 1), charge=1).save()
         Timesheet(consultant=c1, mission=h1, working_date=date(2023, 3, 2), charge=0.5).save()

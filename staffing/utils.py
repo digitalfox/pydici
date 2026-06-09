@@ -17,7 +17,7 @@ from django.utils import formats
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 
-from staffing.models import Timesheet, Mission, LunchTicket, Holiday, Staffing
+from staffing.models import Timesheet, Mission, LunchTicket, PublicHoliday, Staffing
 from core.utils import month_days, nextMonth, daysOfMonth, to_int_or_round
 from people.models import TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY
 
@@ -191,7 +191,7 @@ def holidayDays(month=None):
     if not month:
         month = date.today()
     month = month.replace(day=1)
-    return [h.day for h in Holiday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
+    return [h.day for h in PublicHoliday.objects.filter(day__gte=month).filter(day__lt=nextMonth(month))]
 
 
 def staffingDates(n=12, format=None, minDate=None, maxDate=None):

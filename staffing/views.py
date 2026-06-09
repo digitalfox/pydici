@@ -38,7 +38,7 @@ from django.template.loader import get_template
 from django_weasyprint import WeasyTemplateView
 from auditlog.models import LogEntry
 
-from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
+from staffing.models import Staffing, Mission, PublicHoliday, Timesheet, FinancialCondition, LunchTicket
 from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
@@ -484,7 +484,7 @@ def pdc_review(request, year=None, month=None):
     next_slice_date = start_date + timedelta(days=(31 * n_month))
 
     # Initialize total dict and available dict
-    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.all().values_list("day", flat=True)
     for month in months:
         total[month] = {"prod": 0, "unprod": 0, "holidays": 0, "available": 0, "total": 0}
         available_month[month] = working_days(month, holidays_days)
@@ -724,7 +724,7 @@ def prod_report(request, year=None, month=None):
     # Filter on scope
     consultants = filter.qs.filter(timesheet__working_date__gte=start_date).distinct().select_related("staffing_manager")
 
-    holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
     data = []
     total_done = {}
     total_forecasted = {}
@@ -1501,7 +1501,7 @@ def holiday_csv_timesheet(request, year=None, month=None):
         month = date(int(year), int(month), 1)
     else:
         month = previousMonth(date.today().replace(day=1))
-    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.all().values_list("day", flat=True)
     subsidiary = get_subsidiary_from_session(request)
 
     response = HttpResponse(content_type="text/csv")
@@ -1586,7 +1586,7 @@ def holidays_planning(request, year=None, month=None):
 
     filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True), request=request)
 
-    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.all().values_list("day", flat=True)
     days = daysOfMonth(month)
     data = []
 
@@ -2156,7 +2156,7 @@ def lunch_tickets_pivotable(request):
     days_off = timesheets.filter(charge__gte=0.5).annotate(Count("id")) # Each days beyond half is counted as 1
     days_off = {(i["consultant_id"], i["month"]): i["id__count"] for i in days_off}  # Switch to dict with (consultant, month) as key
 
-    holidays_days = Holiday.objects.filter(day__gte=start_date).values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.filter(day__gte=start_date).values_list("day", flat=True)
     month = start_date
     w_days = {}
     while month < date.today():
@@ -2191,7 +2191,7 @@ def graph_timesheet_rates_bar(request):
     natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures id
     natures_label = [i[1] for i in Mission.MISSION_NATURE]  # Mission natures label
     nature_data = {}
-    holiday_days = [h.day for h in  Holiday.objects.all()]
+    holiday_days = [h.day for h in  PublicHoliday.objects.all()]
     graph_data = []
     tags = None
     if "tag" in request.GET:

@@ -265,9 +265,9 @@ class Consultant(models.Model):
     def is_in_holidays(self):
         """True if consultant is in holiday today. Else False"""
         Timesheet = apps.get_model("staffing", "Timesheet")  # Get Timesheet with get_model to avoid circular imports
-        Holiday = apps.get_model("staffing", "Holiday")  # Idem
+        PublicHoliday = apps.get_model("staffing", "PublicHoliday")  # Idem
         working_date = date.today()
-        holidays = Holiday.objects.filter(day__gte=working_date)
+        holidays = PublicHoliday.objects.filter(day__gte=working_date)
         day = timedelta(1)
         while working_date.weekday() in (5, 6) or working_date in holidays:
             # Go to next open day
