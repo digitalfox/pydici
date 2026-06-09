@@ -21,7 +21,7 @@ from django.forms import inlineformset_factory
 from staffing import utils
 from leads.models import Lead
 from staffing.forms import MissionStaffingInlineFormset, StaffingForm
-from staffing.models import Mission, Staffing, Timesheet, FinancialCondition, PublicHoliday
+from staffing.models import Mission, Staffing, Timesheet, FinancialCondition, PublicHoliday, HolidayBalanceType, HolidayBalance
 from staffing.optim import solve_pdc, display_solver_solution
 from people.models import Consultant, RateObjective
 from core.utils import previousMonth, nextMonth
@@ -84,6 +84,25 @@ class StaffingModelTest(TestCase):
         mission.active = False
         mission.save()
         self.assertEqual(mission.staffing_set.count(), 0)
+
+    def test_holiday_balance(self):
+        c1 = Consultant.objects.get(id=1)
+        paid_holiday, created = Mission.objects.get_or_create(description="paid holidays", nature="HOLIDAYS", subsidiary_id=1, probability=100)
+        balance_type, created = HolidayBalanceType.objects.get_or_create(name="paid holidays", monthly_increment=2)
+        balance_type.missions.add(paid_holiday)
+        balance, created = HolidayBalance.objects.get_or_create(balance_type=balance_type, consultant=c1, balance_date=date(2026,6,1), balance=10)
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
+        # Next month, balance should increase by monthly increment
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10 + balance_type.monthly_increment)
+        # holidays before balance date should not be taken into account
+        Timesheet.objects.create(working_date=date(2026, 5, 1), consultant=c1, charge=1, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10 + balance_type.monthly_increment)
+        # but holidays after balance date should be taken into account
+        Timesheet.objects.create(working_date=date(2026, 6, 10), consultant=c1, charge=1, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10 + balance_type.monthly_increment - 1)
+
 
 
 @override_settings(CELERY_TASK_ALWAYS_EAGER=True)

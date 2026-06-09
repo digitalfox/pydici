@@ -7,7 +7,7 @@ Django administration setup
 
 from django.contrib import admin
 
-from staffing.models import Mission, PublicHoliday, Timesheet, FinancialCondition, Staffing, AnalyticCode, MarketingProduct
+from staffing.models import Mission, PublicHoliday, Timesheet, FinancialCondition, Staffing, AnalyticCode, MarketingProduct, HolidayBalance, HolidayBalanceType
 from core.admin import ReturnToAppAdmin
 
 
@@ -58,6 +58,18 @@ class StaffingAdmin(ReturnToAppAdmin):
     actions = None
 
 
+class HolidayBalanceTypeAdmin(ReturnToAppAdmin):
+    list_display = ("name", "description", "monthly_increment",)
+    search_fields = ("name",)
+    actions = None
+
+
+class HolidayBalanceAdmin(ReturnToAppAdmin):
+    list_display = ("balance_type", "consultant", "balance", "balance_date")
+    search_fields = ("balance_type__name", "consultant__name", "consultant__trigramme")
+    date_hierarchy = "balance_date"
+    actions = None
+
 admin.site.register(AnalyticCode, AnalyticCodeAdmin)
 admin.site.register(MarketingProduct, MarketingProductAdmin)
 admin.site.register(Mission, MissionAdmin)
@@ -65,3 +77,5 @@ admin.site.register(PublicHoliday, PublicHolidayAdmin)
 admin.site.register(FinancialCondition, FinancialConditionAdmin)
 admin.site.register(Timesheet)
 admin.site.register(Staffing, StaffingAdmin)
+admin.site.register(HolidayBalanceType, HolidayBalanceTypeAdmin)
+admin.site.register(HolidayBalance, HolidayBalanceAdmin)

@@ -506,6 +506,36 @@ class PublicHoliday(models.Model):
     class Meta:
         verbose_name = _("Public Holiday")
 
+class HolidayBalanceType(models.Model):
+    """Define holiday balance behaviour"""
+    name = models.CharField(_("Name"), max_length=100)
+    description = models.CharField(_("Description"), max_length=200)
+    missions = models.ManyToManyField(Mission, blank=True)
+    monthly_increment = models.FloatField(_("Monthly Increment"), default=0)
+
+    class Meta:
+        verbose_name = _("Holiday Balance Type")
+        verbose_name_plural = _("Holiday Balance Types")
+
+
+class HolidayBalance(models.Model):
+    """Store current holiday balance for each consultant"""
+    balance_type = models.ForeignKey(HolidayBalanceType, on_delete=models.CASCADE)
+    consultant = models.ForeignKey(Consultant, on_delete=models.CASCADE)
+    balance = models.FloatField(_("Balance"), default=0)
+    balance_date = models.DateField(_("Balance Date"))
+
+    def forecast_balance(self, date):
+        """Rought estimation of forecast balance at a given date"""
+        #TODO: handle part time people. We need to compute working prorata on past month to modulate increment
+        balance = self.balance + self.balance_type.monthly_increment * (date - self.balance_date).days / 30
+        balance -= Timesheet.objects.filter(consultant=self.consultant, working_date__lte=date, working_date__gte=self.balance_date,
+            mission__in=self.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
+        return balance
+
+    class Meta:
+        unique_together = ('consultant', 'balance_type')
+
 
 class Staffing(models.Model):
     """The staffing fact forecasting table: charge per month per consultant per mission"""
