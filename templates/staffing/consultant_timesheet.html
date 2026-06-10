@@ -172,6 +172,15 @@
     {% if is_current_month %}
         <p>{% trans "Forecasted this month: " %} {{ consultant.forecasted_days|floatformat:-2 }}</p>
     {% endif %}
+    {% if holidays_info %}
+    <p>{% trans "Holiday balances:" %}</p>
+    <ul>
+        {% for balance_type, balance, balance_date in holidays_info %}
+            <li>{{ balance_type.name }} ({{ balance_type.description }}) : {{ balance|floatformat:-2 }}
+                ({% blocktrans %}estimated from balance of {{ balance_date }}{% endblocktrans %})</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
     <a href="{% url 'staffing:consultant_timesheet' consultant_id=consultant.id  year=month.year month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
 </div>
 

@@ -38,7 +38,7 @@ from django.template.loader import get_template
 from django_weasyprint import WeasyTemplateView
 from auditlog.models import LogEntry
 
-from staffing.models import Staffing, Mission, PublicHoliday, Timesheet, FinancialCondition, LunchTicket
+from staffing.models import Staffing, Mission, PublicHoliday, Timesheet, FinancialCondition, LunchTicket, HolidayBalance
 from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
@@ -1018,6 +1018,13 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
     wDays = working_days(month, holiday_days)
     wDaysBalance = wDays - (sum(timesheetTotal.values()) - timesheetTotal["ticket"])
 
+    # Gather holiday balances information
+    holidays_info = []
+    if month >= date.today().replace(day=1): # don't try to estimate past balance
+        for holiday_balance in HolidayBalance.objects.filter(consultant=consultant):
+            holidays_info.append((holiday_balance.balance_type, holiday_balance.forecast_balance(month), holiday_balance.balance_date))
+
+
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
 
     if request.method == "POST":
@@ -1056,6 +1063,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                        "next_week": next_week,
                        "today": today,
                        "is_current_month": month == date.today().replace(day=1),
+                       "holidays_info": holidays_info,
                        "user": request.user})
 
     # store user view type preference in a cookie

@@ -513,6 +513,9 @@ class HolidayBalanceType(models.Model):
     missions = models.ManyToManyField(Mission, blank=True)
     monthly_increment = models.FloatField(_("Monthly Increment"), default=0)
 
+    def __str__(self):
+        return f"{self.name} ({self.description})"
+
     class Meta:
         verbose_name = _("Holiday Balance Type")
         verbose_name_plural = _("Holiday Balance Types")
@@ -525,9 +528,12 @@ class HolidayBalance(models.Model):
     balance = models.FloatField(_("Balance"), default=0)
     balance_date = models.DateField(_("Balance Date"))
 
+    def __str__(self):
+        return f"{self.balance_type.name} balance for {self.consultant}"
+
     def forecast_balance(self, date):
         """Rought estimation of forecast balance at a given date"""
-        #TODO: handle part time people. We need to compute working prorata on past month to modulate increment
+        #TODO: handle part time people. We need to compute working prorata on forecasted month to modulate increment
         balance = self.balance + self.balance_type.monthly_increment * (date - self.balance_date).days / 30
         balance -= Timesheet.objects.filter(consultant=self.consultant, working_date__lte=date, working_date__gte=self.balance_date,
             mission__in=self.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
