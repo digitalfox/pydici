@@ -161,29 +161,47 @@
             </div>
         {% endif %}
         </form>
+        <br>
+        <a type="button" class="btn btn-primary" href="{% url 'staffing:consultant_timesheet' consultant_id=consultant.id  year=month.year month=month.month %}/?csv">{% trans "Export a spreadsheet" %}</a>
+        <br>
     {% else %}
         <div class="alert alert-info">{% trans "No forecast this month. You have to defined forecast prior to fill in timesheet" %}</div>
     {% endif %}
 
-    <br/><p>{% trans "Working days in this month: " %} {{ working_days }}</p>
-    {% if working_days_balance %}
-        <p>{% trans "Working days balance: " %} {{ working_days_balance|floatformat:-2 }}</p>
-    {% endif %}
-    {% if is_current_month %}
-        <p>{% trans "Forecasted this month: " %} {{ consultant.forecasted_days|floatformat:-2 }}</p>
-    {% endif %}
-    {% if holidays_info %}
-    <p>{% trans "Holiday balances:" %}</p>
-    <ul>
-        {% for balance_type, balance, balance_date in holidays_info %}
-            <li>{{ balance_type.name }} ({{ balance_type.description }}) : {{ balance|floatformat:-2 }}
-                ({% blocktrans %}estimated from balance of {{ balance_date }}{% endblocktrans %})</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    <a href="{% url 'staffing:consultant_timesheet' consultant_id=consultant.id  year=month.year month=month.month %}/?csv">{% trans "Export this timesheet in a spreadsheet" %}</a>
-</div>
-
+    <div class="row">
+        <div class="col-3">
+            <ul class="mt-3">
+            <li>{% trans "Working days in this month: " %} {{ working_days }}</li>
+            {% if working_days_balance %}
+                <li>{% trans "Working days balance: " %} {{ working_days_balance|floatformat:-2 }}</li>
+            {% endif %}
+            {% if is_current_month %}
+                <li>{% trans "Forecasted this month: " %} {{ consultant.forecasted_days|floatformat:-2 }}</li>
+            {% endif %}
+            </ul>
+        </div>
+        <div class="col-12 col-lg-6 col-xl-4">
+            {% if holidays_info %}
+            <p>{% trans "Holiday balances:" %}</p>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{% trans "Type" %}</th>
+                        <th>{% trans "Balance" %}</th>
+                        <th>{% trans "Estimated from" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for balance_type, balance, balance_date in holidays_info %}
+                    <tr>
+                        <td>{{ balance_type.name }}</td>
+                        <td>{{ balance|floatformat:-2 }}</td>
+                        <td>{{ balance_date }}</td>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </div>
+    </div>
 {% include "core/_highlight_column.html" %}
 
 <script type="text/javascript">
