@@ -206,11 +206,14 @@
                             {% trans "Help" %}
                         </a>
                         <ul class="dropdown-menu pydici-on-top" aria-labelledby="navbarDropdown">
+                            {% if user.is_staff %}
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
+                            {% endif %}
                             {% if pydici_feature.tag_manager %}
                                 <li><a class="dropdown-item" href="{% url 'core:manage_tags' %}">{% trans 'Tag management' %}</a></li>
                             {% endif %}
-                            {% if user.is_staff %}
-                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Admin console" %}</a></li>
+                            {% if pydici_feature.holiday_manager %}
+                                <li><a class="dropdown-item" href="{% url 'staffing:upload_holiday_balance' %}">{% trans 'Upload holiday balance' %}</a></li>
                             {% endif %}
                             <li><a class="dropdown-item" href="{% url 'help' %}">{% trans "Help page" %}</a></li>
                             <li>{{ foo|get_admin_mail }}</li>

@@ -12,6 +12,8 @@ from itertools import zip_longest, chain
 import codecs
 from collections import defaultdict
 from math import sqrt
+from io import StringIO
+import locale
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
@@ -54,7 +56,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
     timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity, compute_mission_consultant_rates, \
     updateHolidaysStaffing, clean_mission_price
-from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
+from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper, HolidayBalanceForm
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT
 from people.tasks import compute_consultant_tasks
@@ -1581,6 +1583,51 @@ def holiday_csv_timesheet(request, year=None, month=None):
 
     return response
 
+@pydici_non_public
+@pydici_feature("holiday_manager")
+def upload_holiday_balance(request):
+    """Upload holiday balance from a CSV file"""
+    if request.method == "POST":
+        form = HolidayBalanceForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES["file"]
+            csv_file.seek(0)
+            io = StringIO(csv_file.read().decode('utf-8'))
+            for i in range(form.cleaned_data["skip_lines"]):
+                io.readline()  # skip header lines
+            lines = 1
+            errors = 0
+            for row in csv.reader(io):
+                try:
+                    consultant = Consultant.objects.get(trigramme=row[form.cleaned_data["consultant_column"] - 1])
+                    balance = locale.atof(row[form.cleaned_data["balance_column"] - 1].replace(',', '.'))  # Weak code...
+                    # remove any previous balance for this consultant and balance type
+                    HolidayBalance.objects.filter(
+                        consultant=consultant,
+                        balance_type=form.cleaned_data["balance_type"],
+                    ).delete()
+                    # create new balance
+                    HolidayBalance.objects.create(
+                        consultant=consultant,
+                        balance_type=form.cleaned_data["balance_type"],
+                        balance=balance,
+                        balance_date=form.cleaned_data["balance_date"],
+                    )
+                except Consultant.DoesNotExist:
+                    messages.error(request, f"Consultant {row[form.cleaned_data['consultant_column'] - 1]} not found (line {lines}): {row}")
+                    errors += 1
+                except Exception as e:
+                    messages.error(request, f"Error while processing row {row}: {e} line {lines}")
+                    errors += 1
+                lines += 1
+            messages.info(request, f"Successfully processed {lines} lines")
+            if errors > 0:
+                messages.error(request, f"Encountered {errors} errors")
+            return redirect("staffing:upload_holiday_balance")
+    else:
+        form = HolidayBalanceForm()
+
+    return render(request, "staffing/upload_holiday_balance.html", {"form": form})
 
 @pydici_non_public
 @pydici_feature("management")

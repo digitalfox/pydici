@@ -26,9 +26,9 @@ from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget,
 from django.utils import formats
 
 
-from staffing.models import Mission, Staffing, MarketingProduct, Timesheet
+from staffing.models import Mission, Staffing, MarketingProduct, Timesheet, HolidayBalanceType
 from people.models import Consultant, ConsultantProfile
-from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin
+from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, PydiciCrispyForm
 from people.forms import ConsultantChoices, ConsultantMChoices
 from crm.forms import MissionContactMChoices
 from staffing.utils import staffingDates, time_string_for_day_percent, day_percent_for_time_string, clean_mission_price
@@ -658,3 +658,27 @@ class OptimiserForm(forms.Form):
         if self.cleaned_data.get("newbie_quota", 0) + self.cleaned_data.get("senior_quota", 0) + self.cleaned_data.get("director_quota", 0) > 100:
             raise ValidationError(_("Sum of profiles quotas cannot exceed 100%"))
         return self.cleaned_data
+
+class HolidayBalanceForm(PydiciCrispyForm):
+    balance_type = forms.ModelChoiceField(queryset=HolidayBalanceType.objects.all(), label=_("Holiday balance type"))
+    file = forms.FileField(label=_("Upload holiday balance"))
+    skip_lines = forms.IntegerField(label=_("Skip lines"), initial=0, max_value=100, min_value=0)
+    consultant_column = forms.IntegerField(label=_("Consultant column"), initial=1, min_value=1, max_value=100)
+    balance_column = forms.IntegerField(label=_("Balance column"), initial=2, min_value=1, max_value=100)
+    balance_date = forms.DateField(label=_("Balance date"), initial=date.today().replace(day=1))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(Row(
+            Column(
+                Field("balance_type"),
+                Field("file"),
+                Field("skip_lines"),
+            ),
+            Column(
+                Field("consultant_column"),
+                Field("balance_column"),
+                Field("balance_date", css_class="datepicker"),
+            ),
+        ),
+          self.submit,)
