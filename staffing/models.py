@@ -510,7 +510,8 @@ class HolidayBalanceType(models.Model):
     """Define holiday balance behaviour"""
     name = models.CharField(_("Name"), max_length=100)
     description = models.CharField(_("Description"), max_length=200)
-    missions = models.ManyToManyField(Mission, blank=True)
+    missions = models.ManyToManyField(Mission, blank=True)  # Missions that will decrease this type of balance
+    excluded_missions = models.ManyToManyField(Mission, blank=True, related_name="excluded_missions")  # Missions for non-full-time employee that will modulate increment
     monthly_increment = models.FloatField(_("Monthly Increment"), default=0)
 
     def __str__(self):
@@ -533,8 +534,12 @@ class HolidayBalance(models.Model):
 
     def forecast_balance(self, date):
         """Rought estimation of forecast balance at a given date"""
-        #TODO: handle part time people. We need to compute working prorata on forecasted month to modulate increment
-        balance = self.balance + self.balance_type.monthly_increment * (date - self.balance_date).days / 30
+        days_off = Staffing.objects.filter(consultant=self.consultant, mission__in=self.balance_type.excluded_missions.all(),
+            staffing_date__gte=self.balance_date, staffing_date__lte=date).aggregate(Sum("charge"))['charge__sum'] or 0
+        month_span = round((date - self.balance_date).days / 30)
+        # very rough approximation of partial worktime ratio guessed from forecasted days off
+        partial_worktime_ratio = 1 - (days_off / (month_span * 20) if month_span > 0 else 0)
+        balance = self.balance + self.balance_type.monthly_increment * month_span * partial_worktime_ratio
         balance -= Timesheet.objects.filter(consultant=self.consultant, working_date__lte=date, working_date__gte=self.balance_date,
             mission__in=self.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
         return balance
