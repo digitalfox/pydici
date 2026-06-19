@@ -47,6 +47,7 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^holidays_report/(?P<year>\d+)/(?P<month>\d+)/?$', v.holiday_csv_timesheet, name="holiday_csv_timesheet"),
                   re_path(r'^holidays_report/?$', v.holiday_csv_timesheet, name="holiday_csv_timesheet"),
                   re_path(r'^upload_holiday_balance/$', v.upload_holiday_balance, name="upload_holiday_balance"),
+                  re_path(r'^holidays_balance_report/$', v.holiday_balances_report, name="holiday_balances_report"),
                   re_path(r'^non-prod_report/(?P<year>\d+)$', v.missions_report, {"nature": "NONPROD"}, name="nonprod-pivotable-year"),
                   re_path(r'^non-prod_report/?$', v.missions_report, {"nature": "NONPROD"}, name="nonprod-pivotable"),
                   re_path(r'^non-prod_report/all$', v.missions_report, {"nature": "NONPROD", "year": "all"}, name="nonprod-pivotable-all"),
