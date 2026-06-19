@@ -162,7 +162,7 @@
         {% endif %}
         </form>
         <br>
-        <a type="button" class="btn btn-primary" href="{% url 'staffing:consultant_timesheet' consultant_id=consultant.id  year=month.year month=month.month %}/?csv">{% trans "Export a spreadsheet" %}</a>
+        <a type="button" class="btn btn-primary" href="{% url 'staffing:consultant_timesheet' consultant_id=consultant.id  year=month.year month=month.month %}/?csv">{% trans "Export in spreadsheet" %}</a>
         <br>
     {% else %}
         <div class="alert alert-info">{% trans "No forecast this month. You have to defined forecast prior to fill in timesheet" %}</div>
