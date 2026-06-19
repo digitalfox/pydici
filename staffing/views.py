@@ -865,7 +865,7 @@ def fixed_price_missions_report(request):
     """Report current fixed price mission margin"""
     data = []
 
-    missions = Mission.objects.filter(active=True, nature="PROD", billing_mode="FIXED_PRICE")
+    missions = Mission.objects.filter(active=True, nature="PROD", billing_mode="FIXED_PRICE", lead__state="WON")
 
     subsidiary = get_subsidiary_from_session(request)
 
