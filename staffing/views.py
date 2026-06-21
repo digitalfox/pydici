@@ -898,7 +898,7 @@ def deactivate_mission(request, mission_id):
 @cache_control(no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, timesheet_view=None):
     """Consultant timesheet"""
-    management_mode_error = None
+    validation_error = None
     price_updated_missions = []
     staffings_updated = []
     # We use the first day to represent month
@@ -1001,8 +1001,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                 # Need to update forecastTotal
                 for mission, previous_charge, next_charge in staffings_updated:
                     forecastTotal[mission.id] = next_charge
-                management_mode_error = check_timesheet_validity(missions, consultant, month)
-                if management_mode_error:
+                validation_error = check_timesheet_validity(missions, consultant, month)
+                if validation_error:
                     transaction.savepoint_rollback(sid)
                 else:  # No violations, we can commit
                     transaction.savepoint_commit(sid)
@@ -1024,7 +1024,12 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
     holidays_info = []
     if month >= date.today().replace(day=1): # don't try to estimate past balance
         for holiday_balance in HolidayBalance.objects.filter(consultant=consultant):
-            holidays_info.append((holiday_balance.balance_type, holiday_balance.forecast_balance(month), holiday_balance.balance_date))
+            balance = holiday_balance.forecast_balance(month)
+            # Set negative balance to 0 as excess as already computed in downstream balances if any
+            if holiday_balance.balance_type.downstream_balance_type.count() > 0:
+                balance = max(0, balance)
+
+            holidays_info.append((holiday_balance.balance_type, balance, holiday_balance.balance_date))
 
 
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
@@ -1055,7 +1060,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                        "working_days_balance": wDaysBalance,
                        "working_days": wDays,
                        "warning": warning,
-                       "management_mode_error": management_mode_error,
+                       "management_mode_error": validation_error,
                        "price_updated_missions": price_updated_missions,
                        "staffings_updated": staffings_updated,
                        "next_date": next_date,

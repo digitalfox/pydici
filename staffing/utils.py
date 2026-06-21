@@ -17,7 +17,7 @@ from django.utils import formats
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 
-from staffing.models import Timesheet, Mission, LunchTicket, PublicHoliday, Staffing
+from staffing.models import Timesheet, Mission, LunchTicket, PublicHoliday, Staffing, HolidayBalance
 from core.utils import month_days, nextMonth, daysOfMonth, to_int_or_round
 from people.models import TIMESHEET_IS_UP_TO_DATE_CACHE_KEY, CONSULTANT_IS_IN_HOLIDAYS_CACHE_KEY
 
@@ -401,6 +401,20 @@ def check_missions_charge_multiple(missions, month):
     return offending_missions
 
 
+def check_holiday_balance_overflow(missions, consultant, month):
+    offending_holiday_balances = []
+    for balance in HolidayBalance.objects.filter(consultant=consultant):
+        forecasted_balance = balance.forecast_balance(month)
+        if forecasted_balance < 0:
+            # Check if downstream balance compensate excess
+            for downstream_balance in HolidayBalance.objects.filter(consultant=consultant,
+                balance_type__in=balance.balance_type.downstream_balance_type.all()):
+                forecasted_balance += downstream_balance.forecast_balance(month, consider_taken_days=False)
+            if forecasted_balance < 0:  # If still negative, we do have an overflow
+                offending_holiday_balances.append(balance)
+    return offending_holiday_balances
+
+
 def check_timesheet_validity(missions, consultant, month):
     """Execute all check that must be done before saving timesheet.
     It's up to the caller to encapsulate this in a transaction and commit or rollback according to results
@@ -418,6 +432,11 @@ def check_timesheet_validity(missions, consultant, month):
     if limited_individual_mode_offending_missions:
         return _("Charge cannot exceed forecast (%s)") %\
             ", ".join([str(m) for m in limited_individual_mode_offending_missions])
+    offending_holiday_balances = check_holiday_balance_overflow(missions, consultant, month)
+    if offending_holiday_balances:
+        return _("Holiday balance overflow (%s)") %\
+            ", ".join([str(b) for b in offending_holiday_balances])
+
 
 
 def compute_mission_consultant_rates(mission):

@@ -4,6 +4,7 @@ Database access layer for pydici staffing module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from turtle import up
 
 from django.db import models
 from django.db.models import Sum, Min, Max, F, Q
@@ -512,6 +513,7 @@ class HolidayBalanceType(models.Model):
     description = models.CharField(_("Description"), max_length=200)
     missions = models.ManyToManyField(Mission, blank=True)  # Missions that will decrease this type of balance
     excluded_missions = models.ManyToManyField(Mission, blank=True, related_name="excluded_missions")  # Missions for non-full-time employee that will modulate increment
+    upstream_balance_type = models.ForeignKey("HolidayBalanceType", on_delete=models.CASCADE, related_name="downstream_balance_type", null=True)  # Balance to decrease before this one
     monthly_increment = models.FloatField(_("Monthly Increment"), default=0)
 
     def __str__(self):
@@ -532,7 +534,7 @@ class HolidayBalance(models.Model):
     def __str__(self):
         return f"{self.balance_type.name} balance for {self.consultant}"
 
-    def forecast_balance(self, date):
+    def forecast_balance(self, date, consider_upstream=True, consider_taken_days=True):
         """Rought estimation of forecast balance at a given date"""
         days_off = Staffing.objects.filter(consultant=self.consultant, mission__in=self.balance_type.excluded_missions.all(),
             staffing_date__gte=self.balance_date, staffing_date__lte=date).aggregate(Sum("charge"))['charge__sum'] or 0
@@ -540,8 +542,20 @@ class HolidayBalance(models.Model):
         # very rough approximation of partial worktime ratio guessed from forecasted days off
         partial_worktime_ratio = 1 - (days_off / (month_span * 20) if month_span > 0 else 0)
         balance = self.balance + self.balance_type.monthly_increment * month_span * partial_worktime_ratio
-        balance -= Timesheet.objects.filter(consultant=self.consultant, working_date__lte=date, working_date__gte=self.balance_date,
+        # subtract charge from taken holidays so far while considering upstream balance if any
+        taken_days = Timesheet.objects.filter(consultant=self.consultant, working_date__lt=nextMonth(date), working_date__gte=self.balance_date,
             mission__in=self.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
+        upstream_balance = 0
+        if self.balance_type.upstream_balance_type and consider_upstream and consider_taken_days:
+            try:
+                upstream_balance = HolidayBalance.objects.get(consultant=self.consultant, balance_type=self.balance_type.upstream_balance_type)\
+                    .forecast_balance(date)
+            except HolidayBalance.DoesNotExist:
+                pass
+            if upstream_balance <= 0:  # Remove taken days that exceed upstream balance
+                balance += upstream_balance
+        elif consider_taken_days:
+            balance -= taken_days
         return balance
 
     class Meta:

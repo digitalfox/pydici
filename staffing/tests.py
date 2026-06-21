@@ -23,6 +23,7 @@ from leads.models import Lead
 from staffing.forms import MissionStaffingInlineFormset, StaffingForm
 from staffing.models import Mission, Staffing, Timesheet, FinancialCondition, PublicHoliday, HolidayBalanceType, HolidayBalance
 from staffing.optim import solve_pdc, display_solver_solution
+from staffing.utils import check_holiday_balance_overflow
 from people.models import Consultant, RateObjective
 from core.utils import previousMonth, nextMonth
 from core.tests import PYDICI_FIXTURES, TEST_USERNAME, setup_test_user_features
@@ -98,10 +99,79 @@ class StaffingModelTest(TestCase):
         Timesheet.objects.create(working_date=date(2026, 5, 1), consultant=c1, charge=1, mission=paid_holiday)
         self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
         self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10 + balance_type.monthly_increment)
-        # but holidays after balance date should be taken into account
+        # holidays on next month should not be taken into account
+        Timesheet.objects.create(working_date=date(2026, 7, 1), consultant=c1, charge=1, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10 - 1 + balance_type.monthly_increment)
+        # but holidays after balance date in current month should be taken into account
+        Timesheet.objects.create(working_date=date(2026, 6, 10), consultant=c1, charge=1, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10 - 1)
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10 - 1 - 1 + balance_type.monthly_increment)
+
+        # Test timesheet validity checker
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 7, 1)), [])
+
+
+    def test_linked_holiday_balance(self):
+        c1 = Consultant.objects.get(id=1)
+        paid_holiday, created = Mission.objects.get_or_create(description="paid holidays", nature="HOLIDAYS", subsidiary_id=1, probability=100)
+        balance_type, created = HolidayBalanceType.objects.get_or_create(name="paid holidays", monthly_increment=2)
+        balance_type.missions.add(paid_holiday)
+        upstream_balance_type, created = HolidayBalanceType.objects.get_or_create(name="paid holidays", monthly_increment=0)
+        upstream_balance_type.missions.add(paid_holiday)
+        balance_type.upstream_balance_type = upstream_balance_type
+        balance_type.save()
+
+        balance, created = HolidayBalance.objects.get_or_create(balance_type=balance_type, consultant=c1, balance_date=date(2026,6,1), balance=10)
+        upstream_balance, created = HolidayBalance.objects.get_or_create(balance_type=upstream_balance_type, consultant=c1, balance_date=date(2026,6,1), balance=5)
+
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
+        self.assertEqual(upstream_balance.forecast_balance(date(2026, 6, 1)), 5)
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 7, 1)), [])
+
+        # take on day without exceding upstream on current month
         Timesheet.objects.create(working_date=date(2026, 6, 10), consultant=c1, charge=1, mission=paid_holiday)
         self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
-        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10 + balance_type.monthly_increment - 1)
+        self.assertEqual(upstream_balance.forecast_balance(date(2026, 6, 1)), 5-1)
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 7, 1)), [])
+
+        # level upstream to zero on current month
+        Timesheet.objects.create(working_date=date(2026, 6, 11), consultant=c1, charge=4, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10)
+        self.assertEqual(upstream_balance.forecast_balance(date(2026, 6, 1)), 5-1-4)
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 7, 1)), [])
+
+        # overflow on downstream on current month
+        Timesheet.objects.create(working_date=date(2026, 6, 12), consultant=c1, charge=1, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 6, 1)), 10-1)
+        self.assertEqual(upstream_balance.forecast_balance(date(2026, 6, 1)), 5-1-4-1)
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 7, 1)), [])
+
+        # continue overflow on downstream on next month
+        Timesheet.objects.create(working_date=date(2026, 7, 1), consultant=c1, charge=1, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10-1-1+2)
+        self.assertEqual(upstream_balance.forecast_balance(date(2026, 7, 1)), 5-1-4-1-1)
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 7, 1)), [])
+
+        # continue to overflow up to the zero remaining days
+        Timesheet.objects.create(working_date=date(2026, 7, 2), consultant=c1, charge=10, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10-1-1+2-10)  # 0
+        self.assertEqual(upstream_balance.forecast_balance(date(2026, 7, 1)), 5-1-4-1-1-10)  # -12
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 7, 1)), [])
+
+        # overflow both balances
+        Timesheet.objects.create(working_date=date(2026, 7, 3), consultant=c1, charge=1, mission=paid_holiday)
+        self.assertEqual(balance.forecast_balance(date(2026, 7, 1)), 10-1-1+2-10-1)  # -1
+        self.assertEqual(upstream_balance.forecast_balance(date(2026, 7, 1)), 5-1-4-1-1-10-1)  # -13
+        self.assertListEqual(check_holiday_balance_overflow([], c1, date(2026, 6, 1)), [])
+        self.assertEqual(len(check_holiday_balance_overflow([], c1, date(2026, 7, 1))), 2)
 
 
 
