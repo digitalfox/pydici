@@ -1527,7 +1527,7 @@ def holiday_csv_timesheet(request, year=None, month=None):
         if timesheets.count() == 0:
             continue
         timesheets = timesheets.filter(mission__nature = "HOLIDAYS")
-        timesheets = timesheets.order_by("working_date")
+        timesheets = timesheets.order_by("working_date", "mission_id")
         holidays[consultant] = {m: [] for m in holidays_types}
         current_holiday = [] # current holiday segment, as a list of Timesheet objects
         for timesheet in timesheets:
