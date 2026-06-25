@@ -513,7 +513,7 @@ class HolidayBalanceType(models.Model):
     description = models.CharField(_("Description"), max_length=200)
     missions = models.ManyToManyField(Mission, blank=True)  # Missions that will decrease this type of balance
     excluded_missions = models.ManyToManyField(Mission, blank=True, related_name="excluded_missions")  # Missions for non-full-time employee that will modulate increment
-    upstream_balance_type = models.ForeignKey("HolidayBalanceType", on_delete=models.CASCADE, related_name="downstream_balance_type", null=True)  # Balance to decrease before this one
+    upstream_balance_type = models.ForeignKey("HolidayBalanceType", on_delete=models.CASCADE, related_name="downstream_balance_type", null=True, blank=True)  # Balance to decrease before this one
     monthly_increment = models.FloatField(_("Monthly Increment"), default=0)
 
     def __str__(self):
