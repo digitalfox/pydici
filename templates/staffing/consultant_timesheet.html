@@ -187,16 +187,19 @@
                 <thead>
                     <tr>
                         <th>{% trans "Type" %}</th>
-                        <th>{% trans "Balance" %}</th>
+                        <th>{% trans "Balance" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% trans 'Just an estimation. Real information is available on pay stub' %}"></i></th>
                         <th>{% trans "Estimated from" %}</th>
+                        <th>{% trans "Forecasted holidays" %} <i class="bi bi-question-circle-fill pydici-tooltip d-none d-md-inline" title="{% blocktrans %}Forecasted holidays after {{ next_date }}.{% endblocktrans %}"></i></th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for balance_type, balance, balance_date in holidays_info %}
+                {% for balance_type, balance, balance_date, forecasted_holidays in holidays_info %}
                     <tr>
                         <td>{{ balance_type.name }}</td>
                         <td>{{ balance|floatformat:-2 }}</td>
                         <td>{{ balance_date }}</td>
+                        <td>{{ forecasted_holidays|floatformat:-2 }}</td>
+                    </tr>
                 {% endfor %}
             </table>
             {% endif %}
@@ -298,6 +301,9 @@ $('#switch-month').on("click", function () {
         highlight_today_timesheet_calendar({{ today }}, "2px solid #555", {{ missions|length }})
      {% endif %}
  }
+
+ // Initialize tooltips
+ $(".pydici-tooltip").tooltip();
 </script>
 
 {% if not read_only %}

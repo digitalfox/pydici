@@ -1028,8 +1028,13 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
             # Set negative balance to 0 as excess as already computed in downstream balances if any
             if holiday_balance.balance_type.downstream_balance_type.count() > 0:
                 balance = max(0, balance)
+            # Estimate forecasted holidays
+            forecasted_holidays = Timesheet.objects.filter(consultant=consultant, working_date__gte=nextMonth(month),
+                mission__in=holiday_balance.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
+            if holiday_balance.balance_type.upstream_balance_type:
+                forecasted_holidays = 0 # Don't count twice.
 
-            holidays_info.append((holiday_balance.balance_type, balance, holiday_balance.balance_date))
+            holidays_info.append((holiday_balance.balance_type, balance, holiday_balance.balance_date, forecasted_holidays))
 
 
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
