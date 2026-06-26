@@ -12,9 +12,9 @@ from datetime import date, timedelta
 import random
 
 from people.models import Consultant
-from crm.models import Client, Subsidiary
+from crm.models import Client, Subsidiary, Contact, ClientOrganisation
 from staffing.factories import ProdMissionFactory
-from leads.models import Lead
+from leads.models import Lead, Activity
 
 
 class LeadFactory(DjangoModelFactory):
@@ -47,3 +47,27 @@ class LeadFactory(DjangoModelFactory):
 
     class Meta:
         model = "leads.Lead"
+
+class ActivityFactory(DjangoModelFactory):
+    name = factory.Faker("bs")
+    responsible = factory.fuzzy.FuzzyChoice(Consultant.objects.all())
+    subsidiary = factory.fuzzy.FuzzyChoice(Subsidiary.objects.all())
+    nature = factory.fuzzy.FuzzyChoice([n[0] for n in Activity.NATURES])
+    objective = factory.fuzzy.FuzzyChoice([n[0] for n in Activity.OBJECTIVES])
+    state = factory.fuzzy.FuzzyChoice([s[0] for s in Activity.STATES])
+    creation_date = factory.Faker("date_between_dates", date_start=date.today()-timedelta(3*365), date_end=date.today())
+    due_date = factory.LazyAttribute(lambda o: o.creation_date + timedelta(random.randint(20, 80)))
+    contact = factory.fuzzy.FuzzyChoice(Contact.objects.all())
+    client_organisation = factory.fuzzy.FuzzyChoice(ClientOrganisation.objects.all())
+
+    class Meta:
+        model = "leads.Activity"
+
+
+class ActivityCommentFactory(DjangoModelFactory):
+    comment = factory.Faker("text")
+    activity = factory.fuzzy.FuzzyChoice(Activity.objects.all())
+    creation_date = factory.Faker("date_between_dates", date_start=date.today()-timedelta(3*365), date_end=date.today())
+
+    class Meta:
+        model = "leads.ActivityComment"

@@ -18,20 +18,25 @@ from crm.factories import SubsidiaryFactory, CompanyFactory, SupplierFactory
 from crm.models import BusinessSector, Subsidiary
 from people.factories import CONSULTANT_PROFILES, ConsultantFactory, UserFactory, DailyRateObjectiveFactory, ProductionRateObjectiveFactory
 from people.models import ConsultantProfile, Consultant
-from core.models import GroupFeature, FEATURES, Parameter
-from leads.factories import LeadFactory
+from people.tasks import compute_all_consultants_tasks
+from core.models import GroupFeature, FEATURES, Parameter, TagCategory
+from core.factories import TagFactory, TaggedLeadFactory, TaggedConsultantFactory
+from leads.factories import LeadFactory, ActivityFactory, ActivityCommentFactory
 from leads.models import Lead
 from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
 from staffing.factories import MarketingProductFactory, OtherStaffingFactory
 from billing.factories import ClientBillFactory
 from core.utils import nextMonth
+from pydici.pydici_celery import app as celery_app
 
 N_SUBSIDIARIES = 3
 N_CONSULTANTS = 50
 N_COMPANIES = 30
 N_SUPPLIERS = 5
 N_LEADS = 200
+N_ACTIVITIES = 30
 N_MARKET_PRODUCTS = 8
+N_TAGS = 20
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -58,8 +63,11 @@ class Command(BaseCommand):
         # Leads and missions
         MarketingProductFactory.create_batch(N_MARKET_PRODUCTS)
         LeadFactory.create_batch(N_LEADS)
+        celery_app.control.purge()  # remove pending tasks triggered by lead/mission creation
         lastweek = datetime.now() - timedelta(days=7)
         Lead.objects.all().update(update_date=lastweek)
+        ActivityFactory.create_batch(N_ACTIVITIES)
+        ActivityCommentFactory.create_batch(3*N_ACTIVITIES)
 
         # Non prod and holidays missions
         other_missions()
@@ -71,7 +79,15 @@ class Command(BaseCommand):
 
         # Bills
         ClientBillFactory.create_batch(N_LEADS * 2)
+        celery_app.control.purge()  # remove pending tasks triggered by bill creations
 
+        # Tags
+        TagFactory.create_batch(N_TAGS)
+        TaggedLeadFactory.create_batch(N_LEADS*2)
+        TaggedConsultantFactory.create_batch(N_CONSULTANTS*5)
+
+        # compute all consultant tasks once
+        compute_all_consultants_tasks()
 
 
 @atomic
@@ -85,6 +101,10 @@ def create_static_data():
     for level, profile in enumerate(CONSULTANT_PROFILES):
         ConsultantProfile(name=profile, level=level).save()
     ConsultantProfile(name="support", level=3).save()
+
+    # Tag categories
+    for category in ["business domaine","Saas and packaged software", "dev tools", "infrastructure", "method", "foreign language" ]:
+        TagCategory(name=category).save()
 
 @atomic
 def set_managers():
