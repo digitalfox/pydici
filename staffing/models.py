@@ -4,8 +4,6 @@ Database access layer for pydici staffing module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from turtle import up
-
 from django.db import models
 from django.db.models import Sum, Min, Max, F, Q
 from django.db.models.functions import TruncMonth
