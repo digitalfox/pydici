@@ -194,7 +194,7 @@ def compute_consultant_tasks(consultant_id):
     # too few planned holidays
     planned_holidays = Staffing.objects.filter(mission__nature="HOLIDAYS", staffing_date__gte=previousMonth(date.today()), consultant=consultant)
     planned_holidays = planned_holidays.aggregate(Sum("charge"))["charge__sum"] or 0
-    last_known_balance = HolidayBalance.objects.filter(consultant=consultant).aggregate(Sum("balance")).get("balance__sum", 0)
+    last_known_balance = HolidayBalance.objects.filter(consultant=consultant).aggregate(Sum("balance")).get("balance__sum", 0) or 0
     if planned_holidays < 5 and last_known_balance > 5:
         planned_holidays_priority = get_task_priority(5 - planned_holidays, (2, 4))
         tasks.append(ConsultantTask(label=_("Too few holidays planned"), count=planned_holidays,
