@@ -14,7 +14,7 @@ from django.db.models import Sum
 from django.utils.translation import gettext as _
 
 from people.models import Consultant
-from staffing.models import Timesheet, Holiday
+from staffing.models import Timesheet, PublicHoliday
 
 
 
@@ -49,7 +49,7 @@ def outside_business_hours():
     """Don't bother people outside business hours"""
     now = datetime.now()
     today = date.today()
-    holiday_today = Holiday.objects.filter(day=today)
+    holiday_today = PublicHoliday.objects.filter(day=today)
     return now.weekday() in (5, 6) or now.hour < 9 or now.hour > 19 or holiday_today.count() > 0
 
 

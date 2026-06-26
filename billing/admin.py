@@ -4,6 +4,8 @@ Django administration setup
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+from PIL.ImageOps import autocontrast
+from enum import auto
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
@@ -30,6 +32,7 @@ class ClientBillAdmin(BillAdmin):
                  (_("State"), {"fields": ["state", "comment", ]}),
                  (_("Link with expenses"), {"fields": ["expenses", "expenses_with_vat", ]}),
                  ]
+    autocomplete_fields = ["lead"]
 
 
 class SupplierBillAdmin(BillAdmin):
@@ -43,6 +46,7 @@ class SupplierBillAdmin(BillAdmin):
                  (_("State"), {"fields": ["state", "comment", ]}),
                  (_("Link with expenses"), {"fields": ["expenses", "expenses_with_vat", ]}),
                  ]
+    autocomplete_fields = ["lead"]
 
 
 class InternalBillAdmin(BillAdmin):

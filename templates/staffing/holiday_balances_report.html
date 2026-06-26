@@ -1,0 +1,40 @@
+{% extends "core/pydici.html" %}
+{% load i18n %}
+{% load pydici_filters %}
+
+{% block extrajs %}
+    {% include "core/_billboard.html" %}
+    {% include "core/_pivotable_header.html" %}
+{% endblock %}
+
+{% block title %}
+    {% trans "Holiday balances report" %}
+{% endblock %}
+
+{% block content %}
+
+    {% with output="pivotable-output" %}
+        {% include "core/_pivotable_body.html" %}
+    {% endwith %}
+
+    <h3 class="my-3">{% trans "Holiday balances report" %}</h3>
+    <div class="table-responsive">
+        <div id="pivotable-output"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            var lang = {% if LANGUAGE_CODE == "fr-fr" %}'fr'{% else %}'en'{% endif %};
+            $("#pivotable-output").pivot({{ data|safe }},
+                    { rows: ["{% trans 'consultant' %}", "{% trans 'balance date' %}"],
+                      cols: ["{% trans 'type' %}"],
+                      sorters: {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])},
+                      aggregator: $.pivotUtilities.aggregators.Sum(["{% trans 'balance' %}"]) },
+                      lang);
+    });
+
+    </script>
+
+
+{% endblock %}

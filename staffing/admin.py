@@ -7,7 +7,7 @@ Django administration setup
 
 from django.contrib import admin
 
-from staffing.models import Mission, Holiday, Timesheet, FinancialCondition, Staffing, AnalyticCode, MarketingProduct
+from staffing.models import Mission, PublicHoliday, Timesheet, FinancialCondition, Staffing, AnalyticCode, MarketingProduct, HolidayBalance, HolidayBalanceType
 from core.admin import ReturnToAppAdmin
 
 
@@ -34,9 +34,10 @@ class MissionAdmin(ReturnToAppAdmin):
     list_filter = ["nature", "probability", "subsidiary", "active", "archived_date"]
     actions = None
     fields = ("lead", "description", "nature", "probability", "deal_id", "subsidiary", "analytic_code", "marketing_product", "active", "always_displayed")
+    autocomplete_fields = ["lead"]
 
 
-class HolidayAdmin(admin.ModelAdmin):
+class PublicHolidayAdmin(admin.ModelAdmin):
     list_display = ("day", "description")
     date_hierarchy = "day"
     actions = None
@@ -47,6 +48,7 @@ class FinancialConditionAdmin(ReturnToAppAdmin):
     search_fileds = ("mission__lead__name", "mission__description", "mission__deal_id", "mission__lead__client__organisation__company__name",
                      "mission__lead__client__contact__name", "consultant__name", "consultant__trigramme")
     actions = None
+    autocomplete_fields = ["mission", "consultant"]
 
 
 class StaffingAdmin(ReturnToAppAdmin):
@@ -56,12 +58,31 @@ class StaffingAdmin(ReturnToAppAdmin):
     date_hierarchy = "staffing_date"
     list_filter = ("mission__subsidiary", "mission__active")
     actions = None
+    autocomplete_fields = ["mission", "consultant"]
+
+
+class HolidayBalanceTypeAdmin(ReturnToAppAdmin):
+    list_display = ("name", "description", "monthly_increment",)
+    search_fields = ("name",)
+    actions = None
+    autocomplete_fields = ["missions", "excluded_missions"]
+
+
+class HolidayBalanceAdmin(ReturnToAppAdmin):
+    list_display = ("balance_type", "consultant", "balance", "balance_date")
+    list_filter = ("balance_type", "consultant__company")
+    search_fields = ("balance_type__name", "consultant__name", "consultant__trigramme")
+    date_hierarchy = "balance_date"
+    actions = None
+    autocomplete_fields = ["consultant"]
 
 
 admin.site.register(AnalyticCode, AnalyticCodeAdmin)
 admin.site.register(MarketingProduct, MarketingProductAdmin)
 admin.site.register(Mission, MissionAdmin)
-admin.site.register(Holiday, HolidayAdmin)
+admin.site.register(PublicHoliday, PublicHolidayAdmin)
 admin.site.register(FinancialCondition, FinancialConditionAdmin)
 admin.site.register(Timesheet)
 admin.site.register(Staffing, StaffingAdmin)
+admin.site.register(HolidayBalanceType, HolidayBalanceTypeAdmin)
+admin.site.register(HolidayBalance, HolidayBalanceAdmin)

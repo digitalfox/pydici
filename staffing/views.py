@@ -12,6 +12,8 @@ from itertools import zip_longest, chain
 import codecs
 from collections import defaultdict
 from math import sqrt
+from io import StringIO
+import locale
 
 from django.core.cache import cache
 from django.shortcuts import render, redirect
@@ -38,7 +40,7 @@ from django.template.loader import get_template
 from django_weasyprint import WeasyTemplateView
 from auditlog.models import LogEntry
 
-from staffing.models import Staffing, Mission, Holiday, Timesheet, FinancialCondition, LunchTicket
+from staffing.models import Staffing, Mission, PublicHoliday, Timesheet, FinancialCondition, LunchTicket, HolidayBalance
 from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
@@ -54,7 +56,7 @@ from staffing.utils import gatherTimesheetData, saveTimesheetData, saveFormsetAn
     sortMissions, holidayDays, staffingDates, time_string_for_day_percent, \
     timesheet_report_data, timesheet_report_data_grouped, check_timesheet_validity, compute_mission_consultant_rates, \
     updateHolidaysStaffing, clean_mission_price
-from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper
+from staffing.forms import MissionForm, OptimiserForm, MissionOptimiserForm, MissionOptimiserFormsetHelper, HolidayBalanceForm
 from staffing.optim import solve_pdc, solver_solution_format, compute_consultant_freetime, compute_consultant_rates, solver_apply_forecast
 from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMIT
 from people.tasks import compute_consultant_tasks
@@ -484,7 +486,7 @@ def pdc_review(request, year=None, month=None):
     next_slice_date = start_date + timedelta(days=(31 * n_month))
 
     # Initialize total dict and available dict
-    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.all().values_list("day", flat=True)
     for month in months:
         total[month] = {"prod": 0, "unprod": 0, "holidays": 0, "available": 0, "total": 0}
         available_month[month] = working_days(month, holidays_days)
@@ -724,7 +726,7 @@ def prod_report(request, year=None, month=None):
     # Filter on scope
     consultants = filter.qs.filter(timesheet__working_date__gte=start_date).distinct().select_related("staffing_manager")
 
-    holidays_days = Holiday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.filter(day__gte=start_date, day__lte=nextMonth(end_date)).values_list("day", flat=True)
     data = []
     total_done = {}
     total_forecasted = {}
@@ -863,7 +865,7 @@ def fixed_price_missions_report(request):
     """Report current fixed price mission margin"""
     data = []
 
-    missions = Mission.objects.filter(active=True, nature="PROD", billing_mode="FIXED_PRICE")
+    missions = Mission.objects.filter(active=True, nature="PROD", billing_mode="FIXED_PRICE", lead__state="WON")
 
     subsidiary = get_subsidiary_from_session(request)
 
@@ -896,7 +898,7 @@ def deactivate_mission(request, mission_id):
 @cache_control(no_store=True)
 def consultant_timesheet(request, consultant_id, year=None, month=None, timesheet_view=None):
     """Consultant timesheet"""
-    management_mode_error = None
+    validation_error = None
     price_updated_missions = []
     staffings_updated = []
     # We use the first day to represent month
@@ -999,8 +1001,8 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                 # Need to update forecastTotal
                 for mission, previous_charge, next_charge in staffings_updated:
                     forecastTotal[mission.id] = next_charge
-                management_mode_error = check_timesheet_validity(missions, consultant, month)
-                if management_mode_error:
+                validation_error = check_timesheet_validity(missions, consultant, month)
+                if validation_error:
                     transaction.savepoint_rollback(sid)
                 else:  # No violations, we can commit
                     transaction.savepoint_commit(sid)
@@ -1017,6 +1019,23 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
     # Compute workings days of this month and compare it to declared days
     wDays = working_days(month, holiday_days)
     wDaysBalance = wDays - (sum(timesheetTotal.values()) - timesheetTotal["ticket"])
+
+    # Gather holiday balances information
+    holidays_info = []
+    if month >= date.today().replace(day=1): # don't try to estimate past balance
+        for holiday_balance in HolidayBalance.objects.filter(consultant=consultant):
+            balance = holiday_balance.forecast_balance(month)
+            # Set negative balance to 0 as excess as already computed in downstream balances if any
+            if holiday_balance.balance_type.downstream_balance_type.count() > 0:
+                balance = max(0, balance)
+            # Estimate forecasted holidays
+            forecasted_holidays = Timesheet.objects.filter(consultant=consultant, working_date__gte=nextMonth(month),
+                mission__in=holiday_balance.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
+            if holiday_balance.balance_type.upstream_balance_type:
+                forecasted_holidays = 0 # Don't count twice.
+
+            holidays_info.append((holiday_balance.balance_type, balance, holiday_balance.balance_date, forecasted_holidays))
+
 
     previous_date_enabled = check_user_timesheet_access(request.user, consultant, previous_date.replace(day=1)) != TIMESHEET_ACCESS_NOT_ALLOWED
 
@@ -1046,7 +1065,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                        "working_days_balance": wDaysBalance,
                        "working_days": wDays,
                        "warning": warning,
-                       "management_mode_error": management_mode_error,
+                       "management_mode_error": validation_error,
                        "price_updated_missions": price_updated_missions,
                        "staffings_updated": staffings_updated,
                        "next_date": next_date,
@@ -1056,6 +1075,7 @@ def consultant_timesheet(request, consultant_id, year=None, month=None, timeshee
                        "next_week": next_week,
                        "today": today,
                        "is_current_month": month == date.today().replace(day=1),
+                       "holidays_info": holidays_info,
                        "user": request.user})
 
     # store user view type preference in a cookie
@@ -1501,7 +1521,7 @@ def holiday_csv_timesheet(request, year=None, month=None):
         month = date(int(year), int(month), 1)
     else:
         month = previousMonth(date.today().replace(day=1))
-    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.all().values_list("day", flat=True)
     subsidiary = get_subsidiary_from_session(request)
 
     response = HttpResponse(content_type="text/csv")
@@ -1573,6 +1593,74 @@ def holiday_csv_timesheet(request, year=None, month=None):
 
     return response
 
+@pydici_non_public
+@pydici_feature("holiday_manager")
+def upload_holiday_balance(request):
+    """Upload holiday balance from a CSV file"""
+    if request.method == "POST":
+        form = HolidayBalanceForm(request.POST, request.FILES)
+        if form.is_valid():
+            csv_file = request.FILES["file"]
+            csv_file.seek(0)
+            io = StringIO(csv_file.read().decode('utf-8'))
+            for i in range(form.cleaned_data["skip_lines"]):
+                io.readline()  # skip header lines
+            lines = 1
+            errors = 0
+            for row in csv.reader(io):
+                try:
+                    consultant = Consultant.objects.get(trigramme=row[form.cleaned_data["consultant_column"] - 1])
+                    balance = locale.atof(row[form.cleaned_data["balance_column"] - 1].replace(',', '.'))  # Weak code...
+                    # remove any previous balance for this consultant and balance type
+                    HolidayBalance.objects.filter(
+                        consultant=consultant,
+                        balance_type=form.cleaned_data["balance_type"],
+                    ).delete()
+                    # create new balance
+                    HolidayBalance.objects.create(
+                        consultant=consultant,
+                        balance_type=form.cleaned_data["balance_type"],
+                        balance=balance,
+                        balance_date=form.cleaned_data["balance_date"],
+                    )
+                except Consultant.DoesNotExist:
+                    messages.error(request, f"Consultant {row[form.cleaned_data['consultant_column'] - 1]} not found (line {lines}): {row}")
+                    errors += 1
+                except Exception as e:
+                    messages.error(request, f"Error while processing row {row}: {e} line {lines}")
+                    errors += 1
+                lines += 1
+            messages.info(request, f"Successfully processed {lines} lines")
+            if errors > 0:
+                messages.error(request, f"Encountered {errors} errors")
+            return redirect("staffing:upload_holiday_balance")
+    else:
+        form = HolidayBalanceForm()
+
+    return render(request, "staffing/upload_holiday_balance.html", {"form": form})
+
+
+@pydici_non_public
+@pydici_feature("management")
+def holiday_balances_report(request):
+    """Display holiday balances for current month"""
+    #ADD subsidiary filter
+    balances = HolidayBalance.objects.filter(consultant__active=True)
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        balances = balances.filter(consultant__company=subsidiary)
+
+    data = []
+    for balance in balances:
+        data.append({
+            _("consultant"): str(balance.consultant),
+            _("balance") : balance.balance,
+            _("balance date"): balance.balance_date.strftime("%Y-%m"),
+            _("type"): balance.balance_type.name
+        })
+
+    return render(request, "staffing/holiday_balances_report.html", {"data": json.dumps(data)})
+
 
 @pydici_non_public
 @pydici_feature("management")
@@ -1586,7 +1674,7 @@ def holidays_planning(request, year=None, month=None):
 
     filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True), request=request)
 
-    holidays_days = Holiday.objects.all().values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.all().values_list("day", flat=True)
     days = daysOfMonth(month)
     data = []
 
@@ -2156,7 +2244,7 @@ def lunch_tickets_pivotable(request):
     days_off = timesheets.filter(charge__gte=0.5).annotate(Count("id")) # Each days beyond half is counted as 1
     days_off = {(i["consultant_id"], i["month"]): i["id__count"] for i in days_off}  # Switch to dict with (consultant, month) as key
 
-    holidays_days = Holiday.objects.filter(day__gte=start_date).values_list("day", flat=True)
+    holidays_days = PublicHoliday.objects.filter(day__gte=start_date).values_list("day", flat=True)
     month = start_date
     w_days = {}
     while month < date.today():
@@ -2191,7 +2279,7 @@ def graph_timesheet_rates_bar(request):
     natures = [i[0] for i in Mission.MISSION_NATURE]  # Mission natures id
     natures_label = [i[1] for i in Mission.MISSION_NATURE]  # Mission natures label
     nature_data = {}
-    holiday_days = [h.day for h in  Holiday.objects.all()]
+    holiday_days = [h.day for h in  PublicHoliday.objects.all()]
     graph_data = []
     tags = None
     if "tag" in request.GET:
