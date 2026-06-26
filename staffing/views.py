@@ -1603,11 +1603,13 @@ def upload_holiday_balance(request):
             csv_file = request.FILES["file"]
             csv_file.seek(0)
             io = StringIO(csv_file.read().decode('utf-8'))
+            dialect = csv.Sniffer().sniff(io.read(1024), delimiters=";,") # guess separator
+            io.seek(0)
             for i in range(form.cleaned_data["skip_lines"]):
                 io.readline()  # skip header lines
             lines = 1
             errors = 0
-            for row in csv.reader(io):
+            for row in csv.reader(io, dialect=dialect):
                 try:
                     consultant = Consultant.objects.get(trigramme=row[form.cleaned_data["consultant_column"] - 1])
                     balance = locale.atof(row[form.cleaned_data["balance_column"] - 1].replace(',', '.'))  # Weak code...
