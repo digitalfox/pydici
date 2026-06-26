@@ -2156,12 +2156,11 @@ def turnover_pivotable(request, year=None):
 
     if year is None and years:
         year = years[-1]
-    if year != "all":
-        year = int(year)
-        start = date(year, month, 1)
-        end = date(year + 1, month, 1)
-        end = min(end, date.today().replace(day=1))
-        missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
+    year = int(year)
+    start = date(year, month, 1)
+    end = date(year + 1, month, 1)
+    end = min(end, date.today().replace(day=1))
+    missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
 
     missions = missions.distinct()
     missions = missions.select_related("responsible", "lead__client__contact", "lead__client__organisation__company", "subsidiary",

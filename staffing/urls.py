@@ -61,7 +61,6 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^datatable/clientcompany-missions/(?P<clientcompany_id>\d+)/data/$', t.ClientCompanyActiveMissionsTablesDT.as_view(), name='client_company_mission_table_DT'),
                   re_path(r'^turnover-pivotable/$', v.turnover_pivotable, name="turnover_pivotable"),
                   re_path(r'^turnover-pivotable/(?P<year>\d+)$', v.turnover_pivotable, name="turnover_pivotable_year"),
-                  re_path(r'^turnover-pivotable/all$', v.turnover_pivotable, {"year": "all"}, name="turnover_pivotable_all"),
                   re_path(r'^lunch-tickets-pivotable$', v.lunch_tickets_pivotable, name="lunch_tickets_pivotable"),
                   re_path(r'^rate_objective_report/?$', v.rate_objective_report, name="rate_objective_report"),
                   re_path(r'^rates_report/?$', v.rates_report, name="rates_report"),
