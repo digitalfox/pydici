@@ -1,6 +1,7 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
 {% load pydici_filters %}
+{% load crispy_forms_tags %}
 
 {% block extrajs %}
     {% include "core/_billboard.html" %}
@@ -12,7 +13,12 @@
 {% endblock %}
 
 {% block content %}
-
+    <div class="row">
+        <div class="col-lg-12">
+            <!-- Scope  button -->
+            {% crispy filter.form filter_form_helper %}
+        </div>
+    </div>
     {% with output="pivotable-output" %}
         {% include "core/_pivotable_body.html" %}
     {% endwith %}

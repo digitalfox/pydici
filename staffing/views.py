@@ -1650,6 +1650,9 @@ def holiday_balances_report(request):
     if subsidiary:
         balances = balances.filter(consultant__company=subsidiary)
 
+    filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True), request=request)
+    balances = balances.filter(consultant__in= filter.qs.filter(active=True))
+
     data = []
     for balance in balances:
         data.append({
@@ -1659,7 +1662,8 @@ def holiday_balances_report(request):
             _("type"): balance.balance_type.name
         })
 
-    return render(request, "staffing/holiday_balances_report.html", {"data": json.dumps(data)})
+    return render(request, "staffing/holiday_balances_report.html",
+        {"data": json.dumps(data), "filter": filter, "filter_form_helper": ConsultantFilterFormHelper(), "user": request.user})
 
 
 @pydici_non_public
