@@ -38,6 +38,7 @@ CACHES = {
 SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 
 TIME_ZONE = 'Europe/Paris'
+USE_TZ = False # For now, we don't use timezone-aware datetimes.
 
 LANGUAGE_CODE = 'fr-fr'
 LOCALE_PATHS = (os.path.join(PYDICI_ROOTDIR, "locale"),)
