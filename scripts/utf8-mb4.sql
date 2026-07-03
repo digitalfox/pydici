@@ -2,7 +2,7 @@
 /* kindly inspired by zabbix migration scripts */
 SELECT   CONCAT('ALTER TABLE ', table_schema, '.`', table_name, '`',
 		                   ' MODIFY COLUMN `', column_name, '` ', column_type,
-		                   ' CHARACTER SET utf8mb4 COLLATE utf8mb4_bin',
+		                   ' CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci',
 		                case
 		                    when column_default is null then ''
 		                    else concat(' default ', column_default, ' ')
@@ -21,6 +21,6 @@ WHERE table_schema = 'pydici'
 union
 
 SELECT CONCAT('ALTER TABLE ', table_schema, '.`', table_name, '`',
-		                   ' CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;') AS command
+		                   ' CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;') AS command
 		        FROM information_schema.tables
 		        WHERE table_schema = 'pydici'
