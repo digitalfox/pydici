@@ -24,4 +24,4 @@ django-auditlog==3.4.1
 factur-x==5.1
 django-countries==8.2.0
 factory_boy==3.3.3
-django-filter==24.1
+django-filter==25.2
