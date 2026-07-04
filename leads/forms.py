@@ -15,6 +15,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from django_select2.forms import ModelSelect2Widget
 from taggit.forms import TagField
+import emoji
+
 
 from core.forms import PydiciCrispyModelForm, PydiciSelect2WidgetMixin, TagChoices
 from core.models import Tag
@@ -153,6 +155,11 @@ class LeadForm(PydiciCrispyModelForm):
                                     Field("tags", css_class="hide"),  # Don't use type=hidden, it breaks tag parsing.
                                     self.submit)
 
+    def clean_name(self):
+        if emoji.emoji_count(self.cleaned_data["name"]):
+            raise ValidationError(_("Name cannot contain emojis"))
+        return self.cleaned_data["name"]
+
     def clean_sales(self):
         """Ensure sale amount is defined at lead when commercial proposition has been sent"""
         if self.cleaned_data["sales"] and self.instance.id:
@@ -183,6 +190,8 @@ class LeadForm(PydiciCrispyModelForm):
         """Ensure deal id is unique.
         Cannot be done at database level because we tolerate null/blank value and all db engines are
         not consistent in the way they handle that. SQL ISO is really fuzzy about that. Sad"""
+        if emoji.emoji_count(self.cleaned_data["deal_id"]):
+            raise ValidationError(_("Deal id cannot contain emojis"))
         if not self.cleaned_data["deal_id"]:
             # No value, no pb :-)
             return self.cleaned_data["deal_id"]

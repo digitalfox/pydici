@@ -5,12 +5,14 @@ CRM form setup
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import emoji
+
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import  gettext
 from django.utils.encoding import smart_str
 from django.urls import reverse
-
 from django.forms.widgets import Textarea
+from django.core.exceptions import ValidationError
 
 from django_select2.forms import ModelSelect2Widget, ModelSelect2MultipleWidget
 from crispy_forms.layout import Layout, Div, Column, Fieldset, HTML, Field, Row
@@ -211,8 +213,17 @@ class CompanyForm(PydiciCrispyModelForm):
                                                         Column("code", "web"),
                                                         Column("vat_id", "legal_id")),
                                                     css_id=css_id))
+
+    def clean_name(self):
+        if emoji.emoji_count(self.cleaned_data["name"]):
+            raise ValidationError(_("Name cannot contain emojis"))
+        return self.cleaned_data["name"]
+
     def clean_code(self):
+        if emoji.emoji_count(self.cleaned_data["code"]):
+            raise ValidationError(_("Code cannot contain emojis"))
         return self.cleaned_data["code"].upper()
+
 
 class ContactForm(PydiciCrispyModelForm):
     class Meta:
