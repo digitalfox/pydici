@@ -24,23 +24,65 @@
     {% endwith %}
 
     <h3 class="my-3">{% trans "Holiday balances report" %}</h3>
-    <div class="table-responsive">
+    <div id="type-selector" class="btn-group" role="group">
+        <button type="button" class="btn btn-primary active" onclick="current_month_estimation();">{% trans "This month's estimation" %}</button>
+        <button type="button" class="btn btn-primary" onclick="current_estimation_without_this_month_days();">{% trans "This month's estimation without current month days" %}</button>
+        <button type="button" class="btn btn-primary" onclick="from_uploaded_balances();">{% trans "Uploaded balances information" %}</button>
+    </div>
+
+    <div class="table-responsive mt-3">
         <div id="pivotable-output"></div>
     </div>
 
+
+    {% with output="pivotable-output" %}
+        {% include "core/_pivotable_body.html" %}
+    {% endwith %}
+
+
+    {% include "core/_datepicker.html" %}
+
     <script type="text/javascript">
-
+        // Active state switcher
         $(document).ready(function() {
-            var lang = {% if LANGUAGE_CODE == "fr-fr" %}'fr'{% else %}'en'{% endif %};
-            $("#pivotable-output").pivot({{ data|safe }},
-                    { rows: ["{% trans 'consultant' %}", "{% trans 'balance date' %}"],
-                      cols: ["{% trans 'type' %}"],
-                      sorters: {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])},
-                      aggregator: $.pivotUtilities.aggregators.Sum(["{% trans 'balance' %}"]) },
-                      lang);
-    });
+            $('#type-selector button').on("click", function() {
+                $(this).addClass('active').siblings().removeClass('active');
+             });
+        });
 
+        // Share data for all pivot tables
+        var data = {{ data|safe }};
+
+        // Preset definition
+        function current_month_estimation() {
+            var rows = ["{% trans 'consultant' %}", "{% trans 'balance date' %}"];
+            var cols = ["{% trans 'type' %}"];
+            var options = {};
+            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])};
+            options['exclusions'] = { '{% trans "origin" %}': ['{% trans "external system" %}', '{% trans "computed without taken days" %}'] };
+            drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
+        }
+        function current_estimation_without_this_month_days() {
+            var rows = ["{% trans 'consultant' %}", "{% trans 'balance date' %}"];
+            var cols = ["{% trans 'type' %}"];
+            var options = {};
+            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])};
+            options['exclusions'] = { '{% trans "origin" %}': ['{% trans "external system" %}', '{% trans "computed" %}'] };
+            drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
+        }
+        function from_uploaded_balances() {
+            var rows = ["{% trans 'consultant' %}", "{% trans 'balance date' %}"];
+            var cols = ["{% trans 'type' %}"];
+            var options = {};
+            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])};
+            options['exclusions'] = { '{% trans "origin" %}': ['{% trans "computed" %}', '{% trans "computed without taken days" %}'] };
+            drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
+        }
+
+        // default
+        current_month_estimation();
     </script>
+
 
 
 {% endblock %}

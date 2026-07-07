@@ -532,7 +532,7 @@ class HolidayBalance(models.Model):
     def __str__(self):
         return f"{self.balance_type.name} balance for {self.consultant}"
 
-    def forecast_balance(self, date, consider_upstream=True, consider_taken_days=True):
+    def forecast_balance(self, date, consider_upstream=True, consider_taken_days=True, exclude_current_month=False):
         """Rought estimation of forecast balance at a given date"""
         days_off = Staffing.objects.filter(consultant=self.consultant, mission__in=self.balance_type.excluded_missions.all(),
             staffing_date__gte=self.balance_date, staffing_date__lte=date).aggregate(Sum("charge"))['charge__sum'] or 0
@@ -541,13 +541,17 @@ class HolidayBalance(models.Model):
         partial_worktime_ratio = 1 - (days_off / (month_span * 20) if month_span > 0 else 0)
         balance = self.balance + self.balance_type.monthly_increment * month_span * partial_worktime_ratio
         # subtract charge from taken holidays so far while considering upstream balance if any
-        taken_days = Timesheet.objects.filter(consultant=self.consultant, working_date__lt=nextMonth(date), working_date__gte=self.balance_date,
+        if exclude_current_month:
+            taken_days_end_date = date
+        else:
+            taken_days_end_date = nextMonth(date)
+        taken_days = Timesheet.objects.filter(consultant=self.consultant, working_date__lt=taken_days_end_date, working_date__gte=self.balance_date,
             mission__in=self.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
         upstream_balance = 0
         if self.balance_type.upstream_balance_type and consider_upstream and consider_taken_days:
             try:
                 upstream_balance = HolidayBalance.objects.get(consultant=self.consultant, balance_type=self.balance_type.upstream_balance_type)\
-                    .forecast_balance(date)
+                    .forecast_balance(date, exclude_current_month=exclude_current_month)
             except HolidayBalance.DoesNotExist:
                 pass
             if upstream_balance <= 0:  # Remove taken days that exceed upstream balance

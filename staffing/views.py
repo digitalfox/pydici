@@ -1646,7 +1646,6 @@ def upload_holiday_balance(request):
 @pydici_feature("management")
 def holiday_balances_report(request):
     """Display holiday balances for current month"""
-    #ADD subsidiary filter
     balances = HolidayBalance.objects.filter(consultant__active=True)
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
@@ -1661,7 +1660,22 @@ def holiday_balances_report(request):
             _("consultant"): str(balance.consultant),
             _("balance") : balance.balance,
             _("balance date"): balance.balance_date.strftime("%Y-%m"),
-            _("type"): balance.balance_type.name
+            _("type"): balance.balance_type.name,
+            _("origin"): _("external system")
+        })
+        data.append({
+            _("consultant"): str(balance.consultant),
+            _("balance") : max(0, balance.forecast_balance(date.today().replace(day=1))),
+            _("balance date"): date.today().strftime("%Y-%m"),
+            _("type"): balance.balance_type.name,
+            _("origin"): _("computed")
+        })
+        data.append({
+            _("consultant"): str(balance.consultant),
+            _("balance") : max(0, balance.forecast_balance(date.today().replace(day=1), exclude_current_month=True)),
+            _("balance date"): date.today().strftime("%Y-%m"),
+            _("type"): balance.balance_type.name,
+            _("origin"): _("computed without taken days")
         })
 
     return render(request, "staffing/holiday_balances_report.html",
