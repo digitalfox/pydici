@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-07 15:38+0200\n"
-"PO-Revision-Date: 2026-07-07 15:38+0200\n"
+"POT-Creation-Date: 2026-07-08 19:24+0200\n"
+"PO-Revision-Date: 2026-07-08 19:23+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -3203,24 +3203,22 @@ msgstr "date du solde"
 #: templates/staffing/holiday_balances_report.html:70
 #: templates/staffing/holiday_balances_report.html:78
 msgid "origin"
-msgstr ""
+msgstr "origine"
 
 #: staffing/views.py:1664 templates/staffing/holiday_balances_report.html:62
 #: templates/staffing/holiday_balances_report.html:70
-#, fuzzy
-#| msgid "External staffing"
 msgid "external system"
-msgstr "Staffing externe"
+msgstr "Système externe"
 
 #: staffing/views.py:1671 templates/staffing/holiday_balances_report.html:70
 #: templates/staffing/holiday_balances_report.html:78
 msgid "computed"
-msgstr ""
+msgstr "calculé"
 
 #: staffing/views.py:1678 templates/staffing/holiday_balances_report.html:62
 #: templates/staffing/holiday_balances_report.html:78
 msgid "computed without taken days"
-msgstr ""
+msgstr "calculé sans les jours pris"
 
 #: staffing/views.py:1746
 msgid "current"
@@ -5969,9 +5967,6 @@ msgid "Holiday balances:"
 msgstr "Soldes de congés : "
 
 #: templates/staffing/consultant_timesheet.html:190
-#| msgid ""
-#| "Just an estimation based on planned holidays up to this month only and "
-#| "last known balance. Real information is available on pay stub"
 msgid ""
 "Just an estimation based on declared holidays up to this month only and last "
 "known balance. Real information is available on pay stub"
