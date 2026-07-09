@@ -545,7 +545,7 @@ class HolidayBalance(models.Model):
             taken_days_end_date = date
         else:
             taken_days_end_date = nextMonth(date)
-        taken_days = Timesheet.objects.filter(consultant=self.consultant, working_date__lt=taken_days_end_date, working_date__gte=self.balance_date,
+        taken_days = Timesheet.objects.filter(consultant=self.consultant, working_date__lt=taken_days_end_date, working_date__gt=self.balance_date,
             mission__in=self.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
         upstream_balance = 0
         if self.balance_type.upstream_balance_type and consider_upstream and consider_taken_days:
