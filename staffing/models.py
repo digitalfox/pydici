@@ -18,7 +18,7 @@ from datetime import datetime, date, timedelta
 from leads.models import Lead
 from people.models import Consultant
 from crm.models import MissionContact, Subsidiary
-from core.utils import cacheable, nextMonth, get_parameter
+from core.utils import cacheable, nextMonth, get_parameter, get_fiscal_year
 from people.tasks import compute_consultant_tasks
 
 
@@ -483,6 +483,7 @@ class Mission(models.Model):
                               gettext("subsidiary"): subsidiary,
                               gettext("billing mode"): billing_mode,
                               gettext("date"): month.strftime("%Y/%m"),
+                              gettext("fiscal year"): get_fiscal_year(month),
                               gettext("done (days)"): timesheet_data.get(month, 0),
                               gettext("done (€)"): timesheet_data.get(month, 0) * consultant_rates[consultant][0],
                               gettext("forecast (days)"): staffing_data.get(month, 0),
