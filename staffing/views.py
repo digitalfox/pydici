@@ -1818,7 +1818,12 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
     data = []
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
-    timesheets = Timesheet.objects.filter(mission__nature=nature, working_date__lte=date.today())
+    if nature == "WORKING":
+        nature = ["PROD", "NONPROD"]
+    else:
+        nature = [nature]
+
+    timesheets = Timesheet.objects.filter(mission__nature__in=nature, working_date__lte=date.today())
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
         timesheets = timesheets.filter(consultant__company=subsidiary)

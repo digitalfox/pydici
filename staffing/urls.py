@@ -51,6 +51,8 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^non-prod_report/(?P<year>\d+)$', v.missions_report, {"nature": "NONPROD"}, name="nonprod-pivotable-year"),
                   re_path(r'^non-prod_report/?$', v.missions_report, {"nature": "NONPROD"}, name="nonprod-pivotable"),
                   re_path(r'^non-prod_report/all$', v.missions_report, {"nature": "NONPROD", "year": "all"}, name="nonprod-pivotable-all"),
+                  re_path(r'^working-days-pivotable/?$', v.missions_report, {"nature": "WORKING"}, name="working-days-pivotable"),
+                  re_path(r'^working-days-pivotable/(?P<year>\d+)/?$', v.missions_report, {"nature": "WORKING"}, name="working-days-pivotable-year"),
                   re_path(r'^contacts/mission/(?P<mission_id>\d+)/$', v.mission_contacts, name="mission_contacts"),
                   re_path(r'^rate/mission/(?P<mission_id>\d+)/consultant/(?P<consultant_id>\d+)/$', v.mission_consultant_rate, name="mission_consultant_rate"),
                   re_path(r'^pdc-detail/(?P<consultant_id>\d+)/(?P<staffing_date>\d+)/?$', v.pdc_detail, name="pdc_detail"),

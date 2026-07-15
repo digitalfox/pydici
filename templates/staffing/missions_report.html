@@ -10,8 +10,12 @@
 {% block title %}
     {% if nature == "HOLIDAYS" %}
         {% trans "Holidays pivot table" %}
-    {% else %}
+    {% elif nature == "WORKING" %}
+        {% trans "Working days pivot table" %}
+    {% elif nature == "NONPROD" %}
         {% trans "Non productive missions pivot table" %}
+    {% else %}
+        {% trans "Missions pivot table" %}
     {% endif %}
 {% endblock %}
 
