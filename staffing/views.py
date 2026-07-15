@@ -1820,8 +1820,10 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
 
     if nature == "WORKING":
         nature = ["PROD", "NONPROD"]
+        mission_type = "mission__nature"
     else:
         nature = [nature]
+        mission_type = "mission__description"
 
     timesheets = Timesheet.objects.filter(mission__nature__in=nature, working_date__lte=date.today())
     subsidiary = get_subsidiary_from_session(request)
@@ -1844,7 +1846,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
     timesheets =timesheets.annotate(month=TruncMonth("working_date"))
-    timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
+    timesheets = timesheets.values("month", "mission__description", "consultant__name", "mission__nature", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
 
     for timesheet in timesheets:
         # Thank you sqlite for those sad lines of code
@@ -1853,7 +1855,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
             month = month.strftime("%Y-%m")
         data.append({
             _("month") : month,
-            _("type"): timesheet["mission__description"],
+            _("type"): timesheet.get(mission_type),
             _("consultant"): timesheet["consultant__name"],
             _("subsidiary"): timesheet["consultant__company__name"],
             _("profil"): timesheet["consultant__profil__name"],
