@@ -22,6 +22,8 @@
 {% block content %}
         {% if nature == "HOLIDAYS" %}
             <h2>{% trans "Holiday pivot table" %}</h2>
+        {% elif nature == "WORKING" %}
+            <h2>{% trans "Working days pivot table" %}</h2>
         {% else %}
             <h2>{% trans "Non productive missions pivot table" %}</h2>
         {% endif %}
@@ -29,15 +31,11 @@
             {% for year in years %}
                 <a class="btn btn-primary {% if year == selected_year %}active{% endif %}"
                    {% if nature == "HOLIDAYS" %}href="{% url 'staffing:holidays-pivotable-year' year %}"
-                   {% else %}                     href="{% url 'staffing:nonprod-pivotable-year' year %}"
+                   {% elif nature == "WORKING" %}href="{% url 'staffing:working-days-pivotable-year' year %}"
+                   {% else %}href="{% url 'staffing:nonprod-pivotable-year' year %}"
                    {% endif %}
                     >{{ year }}</a>
             {% endfor %}
-                <a class="btn btn-primary {% if 'all' == selected_year %}active{% endif %}"
-                   {% if nature == "HOLIDAYS" %}href="{% url 'staffing:holidays-pivotable-all' %}"
-                   {% else %}                     href="{% url 'staffing:nonprod-pivotable-all' %}"
-                   {% endif %}
-            >{% trans "All" %}</a>
         </div>
 
         <div id="type-selector" class="btn-group" role="group">
