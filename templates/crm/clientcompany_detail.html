@@ -303,7 +303,9 @@
 
         {% with "lead_table" as table_id %}
             {% with lead_data_url as data_url %}
-                {% include "core/_datatables.html" %}
+                {% with lead_datatable_options as datatable_options %}
+                    {% include "core/_datatables.html" %}
+                {% endwith %}
             {% endwith %}
         {% endwith %}
 
@@ -327,7 +329,9 @@
 
         {% with "supplier_lead_table" as table_id %}
             {% with supplier_lead_data_url as data_url %}
-                {% include "core/_datatables.html" %}
+                {% with lead_datatable_options as datatable_options %}
+                    {% include "core/_datatables.html" %}
+                {% endwith %}
             {% endwith %}
         {% endwith %}
 
@@ -351,7 +355,9 @@
 
         {% with "businessbroker_lead_table" as table_id %}
             {% with businessbroker_lead_data_url as data_url %}
-                {% include "core/_datatables.html" %}
+                {% with lead_datatable_options as datatable_options %}
+                    {% include "core/_datatables.html" %}
+                {% endwith %}
             {% endwith %}
         {% endwith %}
 
