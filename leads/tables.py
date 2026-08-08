@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Pydici leads tables
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

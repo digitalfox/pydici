@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Test cases for staffing
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

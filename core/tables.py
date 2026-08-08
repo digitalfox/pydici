@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Pydici core tables
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
@@ -34,7 +33,7 @@ class TagTableDT(PydiciNonPublicdMixin, PydiciFeatureMixin, BaseDatatableView):
         return Tag.objects.all()
 
     def filter_queryset(self, qs):
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get('search[value]', "")
         filters = None
         for word in search.split():
             filter = Q(name__icontains=word)

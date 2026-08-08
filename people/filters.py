@@ -1,4 +1,3 @@
-# coding:utf-8
 """
 People filters
 @author: Sébastien Renard <Sebastien.Renard@digitalfox.org>

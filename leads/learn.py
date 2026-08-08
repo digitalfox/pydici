@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
 Module that handle predictive state of a lead
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

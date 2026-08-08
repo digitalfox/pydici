@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Optimisation tools for pydici staffing module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Conversational consultant timesheet declaration with telegram bot
 

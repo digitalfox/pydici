@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Pydici staffing views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Database access layer for pydici leads module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Test cases for CRM module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

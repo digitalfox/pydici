@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# coding: utf-8
-
 """
 Extract objectives and rates for past years in CSV format
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
@@ -51,4 +49,3 @@ for c in Consultant.objects.filter(active=True, subcontractor=False, productive=
             c.get_rate_objective(rate_type="PROD_RATE").rate/100,
             ])
     output.writerow(line)
-

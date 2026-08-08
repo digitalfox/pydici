@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
-
 """
 Telegram bot for timesheet input and various reminder
 

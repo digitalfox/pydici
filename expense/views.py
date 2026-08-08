@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Pydici expense views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

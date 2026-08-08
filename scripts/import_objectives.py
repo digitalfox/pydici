@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# coding: utf-8
-
 """
 Import objectives and rates from CSV format
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

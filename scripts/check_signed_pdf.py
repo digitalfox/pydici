@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# coding: utf-8
-
 """
 Try to guess if commerce documents are present and signed
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

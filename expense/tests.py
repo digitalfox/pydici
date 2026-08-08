@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Test cases for Expense module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
@@ -119,5 +118,3 @@ class WorkflowTest(TestCase):
         for user in (abo, gba):
             self.assertEqual(len(expense_next_states(e, user)), 0)  # No transition allowed
             self.assertFalse(can_edit_expense(e, user))  # No edition allowed
-
-

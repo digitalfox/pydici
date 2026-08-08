@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Pydici staffing tables
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
@@ -57,7 +56,7 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
 
     def filter_queryset(self, qs):
         """ simple search on some attributes"""
-        search = self.request.GET.get(u'search[value]', None)
+        search = self.request.GET.get("search[value]", None)
         if search:
             qs = qs.filter(Q(deal_id__icontains=search) |
                            Q(description__icontains=search) |

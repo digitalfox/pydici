@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-# coding: utf-8
-
 """
 Export users in simple csv format
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
@@ -39,5 +37,3 @@ for c in Consultant.objects.filter(active=True, subcontractor=False):
              c.company.name.lower().replace(" ", "_"),
             ])
     output.writerow(line)
-
-

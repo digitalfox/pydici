@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
 Helper module that factorize some code that would not be
 appropriate to live in Expense models or view.

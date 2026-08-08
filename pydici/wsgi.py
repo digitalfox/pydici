@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 WSGI Wrapper for production deployment
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

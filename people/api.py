@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Pydici people API.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
@@ -78,4 +77,3 @@ def consultant_deactivation(request):
     except Exception as e:
         logging.error(f"cannot deactivate consultant: {e}")
         return JsonResponse({"result": "error", "msg": "exception occurs"})
-

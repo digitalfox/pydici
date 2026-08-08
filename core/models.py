@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Database access layer for pydici core module
 @author: Aurélien Gâteau (mail@agateau.com)

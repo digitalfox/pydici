@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Test cases for People module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
@@ -105,4 +104,3 @@ class PeopleModelTest(TestCase):
         lead2 = Lead.objects.get(id=2)
         self.assertEqual(c1.get_turnover(end_date=next_month, clients=[lead2.client]), 0)
         self.assertEqual(c1.get_turnover(end_date=next_month, clients=[lead2.client]) + c2.get_turnover(end_date=next_month, clients=[lead2.client]), 0)
-

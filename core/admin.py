@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Admin module for pydici core module
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

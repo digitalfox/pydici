@@ -1,4 +1,3 @@
-# coding: utf-8
 """
 Pydici views decorators
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)

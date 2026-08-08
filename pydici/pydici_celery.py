@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
 Celery initialisation
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
