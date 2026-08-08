@@ -62,6 +62,7 @@ from staffing.optim import OPTIM_NEWBIE_SENIOR_LIMIT, OPTIM_SENIOR_DIRECTOR_LIMI
 from people.tasks import compute_consultant_tasks
 from crm.utils import get_subsidiary_from_session
 from people.utils import subcontractor_is_user
+from staffing.filters import MissionFilter, MissionFilterFormHelper
 
 
 TIMESTRING_FORMATTER = {
@@ -130,12 +131,15 @@ def check_user_timesheet_access(user, consultant, timesheet_month):
 @pydici_non_public
 def missions(request, only_active=True):
     """List of missions"""
+    filter = MissionFilter(request.GET, queryset=Mission.objects.all())
     if only_active:
         data_url = reverse('staffing:active_mission_table_DT')
     else:
         data_url = reverse('staffing:all_mission_table_DT')
     return render(request, "staffing/missions.html",
                   {"all": not only_active,
+                   "filter": filter,
+                   "filter_form_helper": MissionFilterFormHelper(),
                    "data_url": data_url,
                    "datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9] }],
                                              "order": [[0, "asc"]],

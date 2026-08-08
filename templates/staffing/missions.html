@@ -1,6 +1,7 @@
 {% extends "core/pydici.html" %}
-
 {% load i18n %}
+{% load crispy_forms_tags %}
+
 
 {% block title %}
 	{% trans "Missions" %}
@@ -15,7 +16,8 @@
     <h1>{% trans "Active missions" %}</h1>
     <br/><a class="btn btn-primary" href="{% url 'staffing:all_missions' %}">{% trans "Also display inactive missions" %}</a><br/><br/>
 {% endif %}
+{% crispy filter.form filter_form_helper %}
 
-    {% include "staffing/_mission_table.html" %}
+{% include "staffing/_mission_table.html" %}
 
 {% endblock %}

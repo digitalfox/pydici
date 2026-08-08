@@ -16,6 +16,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from staffing.models import Mission
 from core.decorator import PydiciFeatureMixin, PydiciNonPublicdMixin
 from crm.utils import get_subsidiary_from_session
+from staffing.filters import MissionFilter
 
 
 class MissionsViewsMixin(PydiciNonPublicdMixin, PydiciFeatureMixin):
@@ -48,7 +49,8 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
         return qs
 
     def get_initial_queryset(self):
-        qs = Mission.objects.all()
+        filter = MissionFilter(self.request.GET, queryset=Mission.objects.all(), request=self.request)
+        qs = filter.qs
         qs = self._filter_on_subsidiary(qs)
         qs = self._filter_on_consultant(qs)
         return qs.select_related("lead__client__organisation__company", "subsidiary")
@@ -104,7 +106,8 @@ class MissionsTableDT(MissionsViewsMixin, BaseDatatableView):
 class ActiveMissionsTableDT(MissionsTableDT):
     """Active missions table backend for datatables"""
     def get_initial_queryset(self):
-        qs = Mission.objects.filter(active=True)
+        filter = MissionFilter(self.request.GET, queryset=Mission.objects.filter(active=True), request=self.request)
+        qs = filter.qs
         qs = self._filter_on_subsidiary(qs)
         qs = self._filter_on_consultant(qs)
         return qs.select_related("lead__client__organisation__company", "subsidiary")
@@ -112,7 +115,8 @@ class ActiveMissionsTableDT(MissionsTableDT):
 
 class ClientCompanyActiveMissionsTablesDT(MissionsTableDT):
     def get_initial_queryset(self):
-        qs = Mission.objects.filter(active=True, lead__client__organisation__company__id=self.kwargs["clientcompany_id"])
+        filter = MissionFilter(self.request.GET, queryset=Mission.objects.filter(active=True), request=self.request)
+        qs = filter.qs.filter(lead__client__organisation__company__id=self.kwargs["clientcompany_id"])
         qs = self._filter_on_subsidiary(qs)
         qs = self._filter_on_consultant(qs)
         return qs.select_related("lead__client__organisation__company", "subsidiary")

@@ -35,6 +35,7 @@ from core.utils import COLORS, get_parameter
 from billing.models import ClientBill
 from billing.utils import get_client_billing_control_pivotable_data
 from staffing.views import mission_contacts
+from staffing.filters import MissionFilter, MissionFilterFormHelper
 
 
 class ContactReturnToMixin(object):
@@ -488,6 +489,7 @@ def company_detail(request, company_id):
     company = Company.objects.get(id=company_id)
     subsidiary = get_subsidiary_from_session(request)
     data_for_other_subsidiaries = False
+    mission_filter = MissionFilter(request.GET, queryset=Mission.objects.all())
 
     # Find leads of this company
     leads = Lead.objects.filter(client__organisation__company=company)
@@ -563,6 +565,8 @@ def company_detail(request, company_id):
                    "lead_datatable_options": ''' "order": [[7, "desc"]]''',
                    "supplier_lead_data_url": reverse('leads:supplier_company_lead_table_DT', args=[company.id, ]),
                    "businessbroker_lead_data_url": reverse('leads:businessbroker_lead_table_DT', args=[company.id,]),
+                   "mission_filter": mission_filter,
+                   "mission_filter_form_helper": MissionFilterFormHelper(),
                    "mission_data_url": reverse('staffing:client_company_mission_table_DT', args=[company.id,]),
                    "mission_datatable_options": ''' "columnDefs": [{ "orderable": false, "targets": [4, 8, 9, 10] }],
                                                      "order": [[2, "asc"]],
