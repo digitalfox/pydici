@@ -1646,7 +1646,6 @@ def upload_holiday_balance(request):
 @pydici_feature("management")
 def holiday_balances_report(request):
     """Display holiday balances for current month"""
-    #ADD subsidiary filter
     balances = HolidayBalance.objects.filter(consultant__active=True)
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
@@ -1661,7 +1660,22 @@ def holiday_balances_report(request):
             _("consultant"): str(balance.consultant),
             _("balance") : balance.balance,
             _("balance date"): balance.balance_date.strftime("%Y-%m"),
-            _("type"): balance.balance_type.name
+            _("type"): balance.balance_type.name,
+            _("origin"): _("external system")
+        })
+        data.append({
+            _("consultant"): str(balance.consultant),
+            _("balance") : max(0, balance.forecast_balance(date.today().replace(day=1))),
+            _("balance date"): date.today().strftime("%Y-%m"),
+            _("type"): balance.balance_type.name,
+            _("origin"): _("computed")
+        })
+        data.append({
+            _("consultant"): str(balance.consultant),
+            _("balance") : max(0, balance.forecast_balance(date.today().replace(day=1), exclude_current_month=True)),
+            _("balance date"): date.today().strftime("%Y-%m"),
+            _("type"): balance.balance_type.name,
+            _("origin"): _("computed without taken days")
         })
 
     return render(request, "staffing/holiday_balances_report.html",
@@ -1804,7 +1818,14 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
     data = []
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
 
-    timesheets = Timesheet.objects.filter(mission__nature=nature, working_date__lte=date.today())
+    if nature == "WORKING":
+        nature_filter = ["PROD", "NONPROD"]
+        mission_type = "mission__nature"
+    else:
+        nature_filter = [nature]
+        mission_type = "mission__description"
+
+    timesheets = Timesheet.objects.filter(mission__nature__in=nature_filter, working_date__lte=date.today())
     subsidiary = get_subsidiary_from_session(request)
     if subsidiary:
         timesheets = timesheets.filter(consultant__company=subsidiary)
@@ -1825,7 +1846,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
     timesheets =timesheets.annotate(month=TruncMonth("working_date"))
-    timesheets = timesheets.values("month", "mission__description", "consultant__name", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
+    timesheets = timesheets.values("month", "mission__description", "consultant__name", "mission__nature", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
 
     for timesheet in timesheets:
         # Thank you sqlite for those sad lines of code
@@ -1834,7 +1855,7 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
             month = month.strftime("%Y-%m")
         data.append({
             _("month") : month,
-            _("type"): timesheet["mission__description"],
+            _("type"): timesheet.get(mission_type),
             _("consultant"): timesheet["consultant__name"],
             _("subsidiary"): timesheet["consultant__company__name"],
             _("profil"): timesheet["consultant__profil__name"],

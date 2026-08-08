@@ -18,10 +18,15 @@ from people.models import Consultant
 
 
 class ActivityFilter(FilterSet):
-    responsible = ChoiceFilter(method="responsible_filter",
-        choices=(("ME", _("Me")), ("TEAM", _("My team")), ("TERRITORY", _("My business territory"))))
+    responsible = ChoiceFilter(method="responsible_filter")
     state = ChoiceFilter(method="state_filter",
         choices=(Activity.STATES + (("LATE", _("Late")), ("SOON", _("Soon")))))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        responsibles = [[c["responsible__id"], c["responsible__name"]] for c in self.queryset.order_by("responsible__name").values("responsible__name", "responsible__id").distinct()]
+        self.filters["responsible"].extra["choices"] = [("ME", _("Me")), ("TEAM", _("My team")), ("TERRITORY", _("My business territory"))] + [('', '---------')] + responsibles
+
 
     def responsible_filter(self, queryset, name, value):
         consultant = Consultant.objects.get(trigramme__iexact=self.request.user.username)
@@ -31,8 +36,11 @@ class ActivityFilter(FilterSet):
             return queryset.filter(responsible__in=consultant.team(exclude_self=False, staffing=True))
         elif value == "TERRITORY":
             return queryset.filter(client_organisation__company__businessOwner=consultant)
+        elif value.isdigit():
+            return queryset.filter(responsible__id=value)
+        else:
+            return queryset
 
-        return queryset
 
     def state_filter(self, queryset, name, value):
         if value == "LATE":
