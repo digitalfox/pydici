@@ -32,11 +32,11 @@ def learning_warmup():
 
 @shared_task(bind=True, rate_limit="10/m")
 def lead_mail_notify(self, lead_id, from_addr=None, from_name=None):
-    """Notify (mail, telegram) about lead creation or status update"""
+    """Notify by mail about lead creation or status update"""
     lead = Lead.objects.get(id=lead_id)
 
     if not from_addr:
-        pass
+        return
     if from_name:
        from_addr = f"{from_name} <{from_addr}>"
 
