@@ -91,8 +91,6 @@ def search(request):
             consultants = consultants.filter(Q(name__icontains=word) |
                                              Q(trigramme__icontains=word))
         consultants = consultants.distinct().order_by("-active", "name", )
-        if subsidiary:
-            consultants = consultants.filter(company=subsidiary)
 
         # Companies
         companies = Company.objects.all()
