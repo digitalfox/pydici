@@ -41,6 +41,19 @@ class ConsultantProfile(models.Model):
         verbose_name = _("Consultant profile")
 
 
+class ConsultantLocation(models.Model):
+    name = models.CharField(_("Name"), max_length=50, unique=True)
+    description = models.CharField(_("Description"), max_length=50, null=True, blank=True)
+
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ["name"]
+        verbose_name = _("Consultant location")
+
+
 class Consultant(models.Model):
     """A consultant that can manage a lead or be ressource of a mission"""
     name = models.CharField(max_length=50)
@@ -56,6 +69,7 @@ class Consultant(models.Model):
     telegram_alias = models.CharField(max_length=50, null=True, blank=True)
     telegram_id = models.BigIntegerField(null=True)
     tags = TaggableManager(through=TaggedItem, blank=True)
+    location = models.ForeignKey(ConsultantLocation, verbose_name=_("Location"), null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name
