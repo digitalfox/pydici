@@ -40,7 +40,7 @@ from django_weasyprint import WeasyTemplateView
 from auditlog.models import LogEntry
 
 from staffing.models import Staffing, Mission, PublicHoliday, Timesheet, FinancialCondition, LunchTicket, HolidayBalance
-from people.models import Consultant, Subsidiary, RateObjective
+from people.models import Consultant, Subsidiary, RateObjective, ConsultantLocation
 from leads.models import Lead
 from people.models import ConsultantProfile
 from people.forms import ConsultantFilterTagForm
