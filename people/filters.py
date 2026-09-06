@@ -10,7 +10,7 @@ from django_filters import FilterSet, ModelChoiceFilter, ChoiceFilter
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Row, Column, Field
 
-from people.models import Consultant, ConsultantProfile
+from people.models import Consultant, ConsultantProfile, ConsultantLocation
 from crm.utils import get_subsidiary_from_session
 
 def manager_filter_choices(request):
@@ -24,6 +24,7 @@ class ConsultantFilter(FilterSet):
     team = ModelChoiceFilter(method="team_filter", label=_("Team"), queryset=manager_filter_choices)
     profil = ModelChoiceFilter(queryset=ConsultantProfile.objects.filter(consultant__active=True, consultant__productive=True).distinct())
     subcontractor = ChoiceFilter(label=_("Subcontracting"), choices=[(True, _("Yes")), (False, _("No"))], empty_label=_("Anyone"))
+    location = ModelChoiceFilter(queryset=ConsultantLocation.objects.filter(consultant__active=True).distinct())
 
     def __init__(self, data, *args, **kwargs):
         if data.get("subcontractor") is None:
@@ -52,19 +53,21 @@ class ConsultantFilter(FilterSet):
 class ConsultantFilterFormHelper(FormHelper):
     form_method = 'GET'
     layout = Layout(Row(
-        Column(Field("profil"), css_class="col-md-3 col-xs-12"),
-        Column(Field("team"), css_class="col-md-3 col-xs-12"),
-        Column(Field("subcontractor"), css_class="col-md-3 col-xs-12"),
-        Column(Submit('submit', _('Apply Filter'), css_class="filter-submit-btn"), css_class="col-md-3 col-xs-12"),
+        Column(Field("profil"), css_class="col-md-2 col-xs-12"),
+        Column(Field("team"), css_class="col-md-2 col-xs-12"),
+        Column(Field("location"), css_class="col-md-2 col-xs-12"),
+        Column(Field("subcontractor"), css_class="col-md-2 col-xs-12"),
+        Column(Submit('submit', _('Apply Filter'), css_class="filter-submit-btn"), css_class="col-md-2 col-xs-12"),
         css_class="my-3"
     ))
 
 class ConsultantFilterInlineFormHelper(FormHelper):
     form_method = 'GET'
     layout = Layout(Row(
-        Column(Field("profil"), css_class="col-md-4 col-xs-12"),
-        Column(Field("team"), css_class="col-md-4 col-xs-12"),
-        Column(Field("subcontractor"), css_class="col-md-4 col-xs-12"),
+        Column(Field("profil"), css_class="col-md-3 col-xs-12"),
+        Column(Field("team"), css_class="col-md-3 col-xs-12"),
+        Column(Field("location"), css_class="col-md-3 col-xs-12"),
+        Column(Field("subcontractor"), css_class="col-md-3 col-xs-12"),
         css_class="my-3"
     ))
     form_tag = False

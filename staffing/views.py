@@ -459,16 +459,6 @@ def pdc_review(request, year=None, month=None):
         if request.GET["groupby"] in ("manager", "level"):
             groupby = request.GET["groupby"]
 
-    locations = ConsultantLocation.objects.all()
-    selected_location = None
-    selected_location_id = request.GET.get("location")
-    if selected_location_id:
-        try:
-            selected_location = locations.get(pk=selected_location_id)
-            selected_location_id = selected_location.id
-        except (ConsultantLocation.DoesNotExist, ValueError, TypeError):
-            selected_location_id = None
-
     tags = None
     if "tag" in request.GET:
         tags = [int(i) for i in request.GET.getlist("tag")]
@@ -508,9 +498,6 @@ def pdc_review(request, year=None, month=None):
     filter = ConsultantFilter(request.GET, queryset=Consultant.objects.filter(active=True, productive=True), request=request)
 
     consultants = filter.qs
-    if selected_location:
-        consultants = consultants.filter(location=selected_location)
-
     if tags:
         for tag in tags:
             consultants = consultants.filter(tagged_items__tag__id=tag, tagged_items__nature="1_KNOWLEDGE")
@@ -675,9 +662,6 @@ def pdc_review(request, year=None, month=None):
                    "groupby": groupby,
                    "groupby_label": groups[groupby],
                    "groups": groups,
-                   "locations": locations,
-                   "selected_location_id": selected_location_id,
-                   "selected_location": selected_location,
                    "filter": filter,
                    "filter_form_helper": ConsultantFilterInlineFormHelper(),
                    "tag_form": tag_form,

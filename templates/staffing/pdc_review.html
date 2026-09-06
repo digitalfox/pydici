@@ -52,16 +52,6 @@
                 {% endfor %}
             </select>
         </div>
-        <!-- Location button -->
-        <div id="div_id_location" class="mx-1 mb-3">
-            <label for="id_location" class="form-label">{% trans "Location" %}</label>
-            <select name="location" class="select form-select" id="id_location">
-                <option value="">{% trans "All" %}</option>
-                {% for location in locations %}
-                <option value="{{ location.id }}"{% if selected_location_id == location.id %} selected{% endif %}>{{ location.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
     </div>
     <div class="col-xxl-5 col-xl-12 text-nowrap">
         <!-- filter  buttons -->
