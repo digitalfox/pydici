@@ -20,11 +20,18 @@ def manager_filter_choices(request):
         managers = managers.filter(company=subsidiary)
     return managers
 
+def location_filter_choices(request):
+    subsidiary = get_subsidiary_from_session(request)
+    if subsidiary:
+        return ConsultantLocation.objects.filter(consultant__active=True, consultant__company=subsidiary).distinct()
+    return ConsultantLocation.objects.filter(consultant__active=True).distinct()
+
+
 class ConsultantFilter(FilterSet):
     team = ModelChoiceFilter(method="team_filter", label=_("Team"), queryset=manager_filter_choices)
     profil = ModelChoiceFilter(queryset=ConsultantProfile.objects.filter(consultant__active=True, consultant__productive=True).distinct())
     subcontractor = ChoiceFilter(label=_("Subcontracting"), choices=[(True, _("Yes")), (False, _("No"))], empty_label=_("Anyone"))
-    location = ModelChoiceFilter(queryset=ConsultantLocation.objects.filter(consultant__active=True).distinct())
+    location = ModelChoiceFilter(queryset=location_filter_choices)
 
     def __init__(self, data, *args, **kwargs):
         if data.get("subcontractor") is None:
