@@ -66,6 +66,9 @@
                 <td>{{ bill.client_comment|default_if_none:"" }}</td>
             </tr>
         </table>
+        {% if bill.amount > 0 %}{# only show credit note button for bills #}
+            <a href="{% url 'billing:client_bill' %}?credit_note_from={{ bill.id | unlocalize }}" class="btn btn-primary"><i class="bi bi-cash"></i> {% trans "Create a credit note for this bill" %}</a>
+        {% endif %}
     </div>
     <div class="col-md-6">
         <div class="bill-file">

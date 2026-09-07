@@ -347,6 +347,7 @@ def client_bill(request, bill_id=None):
     else:
         bill = None
         have_expenses = False
+
     BillDetailFormSet = inlineformset_factory(ClientBill, BillDetail, formset=BillDetailInlineFormset, form=BillDetailForm, fields="__all__")
     BillExpenseFormSet = inlineformset_factory(ClientBill, BillExpense, formset=BillExpenseInlineFormset, form=BillExpenseForm, fields="__all__")
 
@@ -431,6 +432,29 @@ def client_bill(request, bill_id=None):
                     else:
                         proportion = request.GET.get("proportion", 0.30)
                     bill = update_client_bill_from_proportion(bill, mission, proportion=proportion)
+
+            if request.GET.get("credit_note_from"):
+                credit_note_from = request.GET.get("credit_note_from")
+                target_bill = ClientBill.objects.get(id=credit_note_from)
+                bill = ClientBill(lead=target_bill.lead, anonymize_profile = target_bill.anonymize_profile, vat = target_bill.vat,
+                    amount=-target_bill.amount, amount_with_vat=-target_bill.amount_with_vat,
+                    expenses_with_vat=target_bill.expenses_with_vat,
+                    include_timesheet=target_bill.include_timesheet, lang=target_bill.lang, add_facturx_data=target_bill.add_facturx_data)
+                bill.client_comment = _("Credit note from bill #{}").format(target_bill.bill_id)
+                bill.save()
+                bill.expenses.add(*target_bill.expenses.all()) # m2m needs object save before to create id.
+                for target_detail in target_bill.billdetail_set.all():
+                    detail = BillDetail(amount=target_detail.amount, quantity=-target_detail.quantity,
+                        mission=target_detail.mission, bill=bill, month=target_detail.month, unit_price=target_detail.unit_price,
+                        vat=target_detail.vat, label=target_detail.label)
+                    detail.save()
+                    bill.billdetail_set.add(detail)
+                for target_expense in target_bill.billexpense_set.all():
+                    expense_detail = BillExpense(amount=-target_expense.amount, amount_with_vat=-target_expense.amount_with_vat,
+                        bill=bill, expense=target_expense.expense, expense_date=target_expense.expense_date, label=target_expense.label)
+                    expense_detail.save()
+                    bill.billexpense_set.add(expense_detail)
+                bill.save()
 
             if bill:
                 form = ClientBillForm(instance=bill)
