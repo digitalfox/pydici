@@ -10,7 +10,11 @@
 {% block content %}
 
 <h2>
-    {% blocktrans with id=bill.bill_id %}Bill n°{{ id }}{% endblocktrans %}
+    {% if bill.amount > 0 %}
+        {% blocktrans with id=bill.bill_id %}Bill n°{{ id }}{% endblocktrans %}
+    {% else %}
+        {% blocktrans with id=bill.bill_id %}Credit note n°{{ id }}{% endblocktrans %}
+    {% endif %}
     {% if pydici_feature.billing_management %}<a href="{% url 'billing:client_bill' bill.id %}"><img src='{{MEDIA_URL}}img/icon_changelink.gif'/></a>{% endif %}
 </h2>
 
@@ -26,7 +30,7 @@
                 <td><a href="{% url 'leads:detail' bill.lead.id %}">{{ bill.lead.name }}</a></td>
             </tr>
             <tr>
-                <th>{% trans "Bill id" %}</th>
+                <th>{% if bill.amount > 0 %}{% trans "Bill id" %}{% else %}{% trans "Credit note id" %}{% endif %}</th>
                 <td>{{ bill.bill_id }}</td>
             </tr>
             <tr>

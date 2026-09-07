@@ -444,7 +444,7 @@ def client_bill(request, bill_id=None):
                 bill.save()
                 bill.expenses.add(*target_bill.expenses.all()) # m2m needs object save before to create id.
                 for target_detail in target_bill.billdetail_set.all():
-                    detail = BillDetail(amount=target_detail.amount, quantity=-target_detail.quantity,
+                    detail = BillDetail(amount=target_detail.amount, quantity=-target_detail.quantity, consultant=target_detail.consultant,
                         mission=target_detail.mission, bill=bill, month=target_detail.month, unit_price=target_detail.unit_price,
                         vat=target_detail.vat, label=target_detail.label)
                     detail.save()
