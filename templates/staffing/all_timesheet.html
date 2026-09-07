@@ -1,5 +1,6 @@
 {% extends "core/pydici.html" %}
 {% load i18n %}
+{% load crispy_forms_tags %}
 
 {% block title %}{% trans "All people timesheet for " %} {{ month|date:"F Y"}}{% endblock %}
 
@@ -10,12 +11,12 @@
     <nav class="mx-3">
         <ul class="pagination my-0">
             <li class="page-item">
-                <a class ="page-link" title="{% trans 'Previous months' %}" href="{% url 'staffing:all_timesheet' year=previous_date|date:'Y' month=previous_date|date:'m' %}">
+                <a class ="page-link" title="{% trans 'Previous months' %}" href="{% url 'staffing:all_timesheet' year=previous_date|date:'Y' month=previous_date|date:'m' %}?{{ request.GET.urlencode }}">
                     <i class="bi bi-arrow-left-circle"></i>
                 </a>
             </li>
             <li class="page-item">
-                <a class="page-link" title="{% trans 'Next months' %}" href="{% url 'staffing:all_timesheet' year=next_date|date:'Y' month=next_date|date:'m' %}">
+                <a class="page-link" title="{% trans 'Next months' %}" href="{% url 'staffing:all_timesheet' year=next_date|date:'Y' month=next_date|date:'m' %}?{{ request.GET.urlencode }}">
                     <i class="bi bi-arrow-right-circle"></i>
                 </a>
             </li>
@@ -23,6 +24,7 @@
     </nav>
 </div>
 
+{% crispy consultant_filter.form consultant_filter_form_helper %}
 
 <div class="table-responsive table-pydici-all-timesheets">
 {% if charges %}

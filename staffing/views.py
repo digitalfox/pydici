@@ -3,6 +3,7 @@ Pydici staffing views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
+import time
 
 from datetime import date, timedelta, datetime
 import csv
@@ -1347,6 +1348,8 @@ def all_timesheet(request, year=None, month=None):
     subsidiary = get_subsidiary_from_session(request)
     timesheets = None
 
+    consultant_filter = ConsultantFilter(request.GET, request=request)
+
     if year and month:
         month = date(int(year), int(month), 1)
     else:
@@ -1356,6 +1359,7 @@ def all_timesheet(request, year=None, month=None):
     next_date = nextMonth(month)
     timesheets = Timesheet.objects.filter(working_date__gte=month)
     timesheets = timesheets.filter(working_date__lt=next_date.replace(day=1))  # Discard next month
+    timesheets = timesheets.filter(consultant__in=consultant_filter.qs)
 
     if subsidiary:
         timesheets = timesheets.filter(consultant__company=subsidiary)
@@ -1433,6 +1437,8 @@ def all_timesheet(request, year=None, month=None):
                        "previous_date": previous_date,
                        "month": month,
                        "consultants": consultants,
+                       "consultant_filter": consultant_filter,
+                       "consultant_filter_form_helper": ConsultantFilterFormHelper(),
                        "missions": missions,
                        "charges": charges})
 
