@@ -398,6 +398,7 @@ def mass_staffing(request):
 
 @pydici_non_public
 @transaction.atomic
+@pydici_feature("staffing_mass")
 def mission_staffing_shift(request, shift, mission_id, ):
     """Shift forecasted mission staffing by "shift" months"""
     #TODO: for now, only 1 month shift is considered.
@@ -888,6 +889,7 @@ def fixed_price_missions_report(request):
 
 
 @pydici_non_public
+@pydici_feature("staffing")
 def deactivate_mission(request, mission_id):
     """Deactivate the given mission. Fragment for htmx call"""
     try:
@@ -2016,6 +2018,7 @@ def mission_update(request):
 
 
 @pydici_non_public
+@pydici_feature("staffing")
 def mission_contacts(request, mission_id):
     """Mission contacts: business, work, administrative
     This views is intended to be called in ajax"""
