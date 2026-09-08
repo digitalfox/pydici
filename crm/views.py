@@ -55,7 +55,7 @@ class FeatureContactsWriteMixin(PydiciFeatureMixin):
     pydici_feature = {"3rdparties", "contacts_write"}
 
 
-class ContactCreate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin, CreateView):
+class ContactCreate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, ContactReturnToMixin, CreateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
@@ -68,7 +68,7 @@ class ContactCreate(PydiciNonPublicdMixin, ThirdPartyMixin, ContactReturnToMixin
             return {}
 
 
-class ContactUpdate(PydiciNonPublicdMixin, ThirdPartyMixin, UpdateView):
+class ContactUpdate(PydiciNonPublicdMixin, FeatureContactsWriteMixin, UpdateView):
     model = Contact
     template_name = "core/form.html"
     form_class = ContactForm
