@@ -154,6 +154,9 @@ async def bye(update, context):
     return ConversationHandler.END
 
 def main():
+    if not settings.TELEGRAM_IS_ENABLED:
+        logger.error("Telegram is not enabled. Exiting.")
+        sys.exit(0)
     token = os.environ.get("TELEGRAM_TOKEN", settings.TELEGRAM_TOKEN)
     application = TelegramApplication.builder().token(token).http_version("1.1").get_updates_http_version("1.1").build()
 
@@ -190,7 +193,7 @@ def main():
 
     except telegram.error.Forbidden:
         logger.error("Forbidden. Please check TELEGRAM_TOKEN settings")
-        exit(1)
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
