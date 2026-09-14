@@ -64,7 +64,7 @@ def lead_telegram_notify(self, lead_id, created=False, state_changed=False):
         url = get_parameter("HOST") + reverse("leads:detail", args=[lead.id, ])
         chat_consultants = []  # List of individual consultant to notify
         if created:
-            msg = gettext("New Lead !\n%(lead)s\n%(url)s") % {"lead": lead, "url":url }
+            msg = gettext("New Lead for %(subsidiary)s!\n%(lead)s\n%(url)s") % {"lead": lead, "subsidiary": lead.subsidiary, "url":url }
             sticker = settings.TELEGRAM_STICKERS.get("happy")
             chat_group = "new_leads"
         elif state_changed:
