@@ -4,7 +4,7 @@
 {% load i18n %}
 
 <form hx-post="{% url 'crm:linked_mission_contact_create' mission_id %}"
-      hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});"
+      hx-on::after-settle="$('.django-select2').djangoSelect2({ 'theme': 'bootstrap-5', 'width': 'auto'});$('#contactForm').hide();$('#companyForm').hide();"
       novalidate>
     {% crispy missionContactForm missionContactForm.inline_helper %}
     {% crispy contactForm contactForm.inline_helper %}
