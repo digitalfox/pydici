@@ -107,6 +107,8 @@ def contact_list(request):
                    "user": request.user})
 
 
+@pydici_non_public
+@pydici_feature({"3rdparties", "contacts_write"})
 def linked_mission_contact_create(request, mission_id):
     missionContactForm = None
     contactForm = None
