@@ -10,10 +10,44 @@ function yyyymmdd(dateIn) {
    var dd  = dateIn.getDate();
    return String(10000*yyyy + 100*mm + dd); // Leading zeros for mm and dd
 }
+
 function yyyymm(dateIn) {
    var yyyy = dateIn.getFullYear();
    var mm = dateIn.getMonth()+1; // getMonth() is zero-based
    return String(100*yyyy + mm); // Leading zeros for mm and dd
+}
+
+function from_start_date_reload() {
+  // handle simple startDate / endDate widgets
+  $('.input-daterange input').each(function() {
+      $(this).datepicker('clearDates');
+  });
+
+  // set dates on widgets with template value
+  {% if start_date %}
+      $("#startDate").datepicker("setDate", new Date("{{ start_date|date:"Y-m-d" }}"));
+  {% endif %}
+  {% if end_date %}
+      $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
+  {% endif %}
+
+  // reload data with choosen timeframe
+  $('.datepicker').datepicker().on("change", function(e) {
+      var param = "";
+      var fromDate = $("#startDate").datepicker("getDate");
+      var toDate   = $("#endDate").datepicker("getDate");
+
+      if (fromDate > toDate || fromDate.getTime() == toDate.getTime()) {
+          toDate = new Date(toDate.setMonth(toDate.getMonth()+1));
+      }
+      if (!isNaN(fromDate.getTime())) {
+          param += yyyymm(fromDate) + '/';
+      }
+      if (!isNaN(toDate.getTime())) {
+          param += yyyymm(toDate);
+      }
+      window.location.href = window.location.href.replace(/\?.*/, '').replace(/\d{6}\/?/g, '') + param;
+  });
 }
 
 $(document).ready(function() {

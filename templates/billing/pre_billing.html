@@ -205,22 +205,7 @@ $(document).ready(function() {
         $("#endDate").datepicker("setDate", new Date("{{ end_date|date:"Y-m-d" }}"));
     {% endif %}
 
-    // reload data with choosen timeframe
-    $('.datepicker').datepicker().on("change", function(e) {
-        var param = "";
-        var fromDate = $("#startDate").datepicker("getDate");
-        var toDate   = $("#endDate").datepicker("getDate");
-        if (fromDate > toDate || fromDate.getTime() == toDate.getTime()) {
-            toDate = new Date(toDate.setMonth(toDate.getMonth()+1));
-        }
-        if (!isNaN(fromDate.getTime())) {
-            param += yyyymm(fromDate) + '/';
-        }
-        if (!isNaN(toDate.getTime())) {
-            param += yyyymm(toDate);
-        }
-        window.location.href = window.location.href.replace(/\?.*/, '').replace(/\d{6}\/?/g, '') + param;
-    });
+    from_start_date_reload();
 
 });
 </script>
