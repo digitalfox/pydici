@@ -55,26 +55,26 @@
 
         // Preset definition
         function current_month_estimation() {
-            var rows = ["{% trans 'consultant' %}", "{% trans 'balance date' %}"];
+            var rows = ['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"];
             var cols = ["{% trans 'type' %}"];
             var options = {};
-            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])};
+            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"])};
             options['exclusions'] = { '{% trans "origin" %}': ['{% trans "external system" %}', '{% trans "computed without taken days" %}'] };
             drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
         }
         function current_estimation_without_this_month_days() {
-            var rows = ["{% trans 'consultant' %}", "{% trans 'balance date' %}"];
+            var rows = ['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"];
             var cols = ["{% trans 'type' %}"];
             var options = {};
-            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])};
+            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"])};
             options['exclusions'] = { '{% trans "origin" %}': ['{% trans "external system" %}', '{% trans "computed" %}'] };
             drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
         }
         function from_uploaded_balances() {
-            var rows = ["{% trans 'consultant' %}", "{% trans 'balance date' %}"];
+            var rows = ['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"];
             var cols = ["{% trans 'type' %}"];
             var options = {};
-            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "consultant" %}', "{% trans 'balance date' %}"])};
+            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"])};
             options['exclusions'] = { '{% trans "origin" %}': ['{% trans "computed" %}', '{% trans "computed without taken days" %}'] };
             drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
         }

@@ -1669,6 +1669,7 @@ def holiday_balances_report(request):
     for balance in balances:
         data.append({
             _("consultant"): str(balance.consultant),
+            _("subsidiary"): str(balance.consultant.company),
             _("balance") : balance.balance,
             _("balance date"): balance.balance_date.strftime("%Y-%m"),
             _("type"): balance.balance_type.name,
@@ -1676,6 +1677,7 @@ def holiday_balances_report(request):
         })
         data.append({
             _("consultant"): str(balance.consultant),
+            _("subsidiary"): str(balance.consultant.company),
             _("balance") : max(0, balance.forecast_balance(date.today().replace(day=1))),
             _("balance date"): date.today().strftime("%Y-%m"),
             _("type"): balance.balance_type.name,
@@ -1683,6 +1685,7 @@ def holiday_balances_report(request):
         })
         data.append({
             _("consultant"): str(balance.consultant),
+            _("subsidiary"): str(balance.consultant.company),
             _("balance") : max(0, balance.forecast_balance(date.today().replace(day=1), exclude_current_month=True)),
             _("balance date"): date.today().strftime("%Y-%m"),
             _("type"): balance.balance_type.name,
