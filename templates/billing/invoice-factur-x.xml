@@ -105,7 +105,9 @@
 
 
         <ram:ApplicableHeaderTradeAgreement>
-            <ram:BuyerReference>{{ bill.client_deal_id }}</ram:BuyerReference>
+            {% if bill.client_deal_id %}
+                <ram:BuyerReference>{{ bill.client_deal_id }}</ram:BuyerReference>
+            {% endif %}
             <ram:SellerTradeParty>
                 <ram:Name>{{ bill.lead.subsidiary.commercial_name }}</ram:Name>
                 <ram:SpecifiedLegalOrganization>
