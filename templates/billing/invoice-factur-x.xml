@@ -1,9 +1,9 @@
-<?xml version='1.0' encoding='UTF-8'?>
+{% load pydici_filters %}<?xml version='1.0' encoding='UTF-8'?>
 <!-- pydici ERP - Factur-X compliant XML file to be embedded in PDF/A3 invoice file
      {# Context : bill (ClientBill) #}
      {% load l10n %}
 -->
-
+{% localize off %}
 <rsm:CrossIndustryInvoice
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100"
@@ -16,13 +16,13 @@
             <ram:ID>A1</ram:ID>
         </ram:BusinessProcessSpecifiedDocumentContextParameter>
         <ram:GuidelineSpecifiedDocumentContextParameter>
-            <ram:ID>urn:factur-x.eu:1p0:minimum</ram:ID>
+            <ram:ID>urn:cen.eu:en16931:2017</ram:ID>
         </ram:GuidelineSpecifiedDocumentContextParameter>
     </rsm:ExchangedDocumentContext>
 
     <rsm:ExchangedDocument>
         <ram:ID>{{ bill.bill_id }}</ram:ID>
-        <!-- 380 is standard invoice, 381 is credit note -->
+        {# 380 is standard invoice, 381 is credit note #}
         <ram:TypeCode>{% if bill.amount_with_vat > 0 %}380{% else %}381{% endif %}</ram:TypeCode>
         <ram:IssueDateTime>
             <udt:DateTimeString format="102">{{ bill.creation_date|date:'Ymd' }}</udt:DateTimeString>
@@ -30,6 +30,80 @@
     </rsm:ExchangedDocument>
 
     <rsm:SupplyChainTradeTransaction>
+        {% for detail in bill.billdetail_set.all %}
+            <ram:IncludedSupplyChainTradeLineItem>
+                <ram:AssociatedDocumentLineDocument>
+                    <ram:LineID>S{{ forloop.counter.0 }}</ram:LineID>
+                </ram:AssociatedDocumentLineDocument>
+                <ram:SpecifiedTradeProduct>
+                    <ram:Name>{{ detail.mission.get_billing_mode_display }}</ram:Name>
+                    <ram:Description>
+                        {% if detail.mission.billing_mode == "TIME_SPENT" %}
+                            {% if bill.anonymize_profile %}
+                                {% if detail.label %}{{ detail.label }}{% else %}{{detail.consultant.profil }}{% endif %}
+                            {% else %}
+                                {{ detail.consultant|default_if_none:"" }}{% if detail.label %} - {{ detail.label }}{% endif %}
+                            {% endif %}
+                        {% else %}
+                            Fixed price{% if detail.label %} - {{ detail.label }}{% endif %}
+                        {% endif %}
+                    </ram:Description>
+                </ram:SpecifiedTradeProduct>
+                <ram:SpecifiedLineTradeAgreement>
+                    <ram:NetPriceProductTradePrice>
+                        <ram:ChargeAmount>{{ detail.unit_price }}</ram:ChargeAmount>
+                        <ram:BasisQuantity unitCode="H87">{{ detail.quantity }}</ram:BasisQuantity>
+                    </ram:NetPriceProductTradePrice>
+                </ram:SpecifiedLineTradeAgreement>
+                <ram:SpecifiedLineTradeDelivery>
+                    <ram:BilledQuantity unitCode="H87">{{ detail.quantity }}</ram:BilledQuantity>
+                </ram:SpecifiedLineTradeDelivery>
+                <ram:SpecifiedLineTradeSettlement>
+                    <ram:ApplicableTradeTax>
+                        <ram:TypeCode>VAT</ram:TypeCode>
+                        <ram:CategoryCode>S</ram:CategoryCode>
+                        <ram:RateApplicablePercent>{{ detail.vat }}</ram:RateApplicablePercent>
+                    </ram:ApplicableTradeTax>
+                    <ram:SpecifiedTradeSettlementLineMonetarySummation>
+                        <ram:LineTotalAmount>{{ detail.amount }}</ram:LineTotalAmount>
+                    </ram:SpecifiedTradeSettlementLineMonetarySummation>
+                </ram:SpecifiedLineTradeSettlement>
+            </ram:IncludedSupplyChainTradeLineItem>
+        {% endfor %}
+        {% for detail in bill.billexpense_set.all %}
+            <ram:IncludedSupplyChainTradeLineItem>
+                <ram:AssociatedDocumentLineDocument>
+                    <ram:LineID>E{{ forloop.counter.0 }}</ram:LineID>
+                </ram:AssociatedDocumentLineDocument>
+                <ram:SpecifiedTradeProduct>
+                    <ram:Name>{{ detail.label }}</ram:Name>
+                    <ram:Description>
+                        {{ detail.label }} - {{ detail.expense_date }} - {{ detail.expense.user.username|link_to_consultant|striptags }}
+                    </ram:Description>
+                </ram:SpecifiedTradeProduct>
+                <ram:SpecifiedLineTradeAgreement>
+                    <ram:NetPriceProductTradePrice>
+                        <ram:ChargeAmount>{{ detail.amount }}</ram:ChargeAmount>
+                        <ram:BasisQuantity unitCode="H87">1</ram:BasisQuantity>
+                    </ram:NetPriceProductTradePrice>
+                </ram:SpecifiedLineTradeAgreement>
+                <ram:SpecifiedLineTradeDelivery>
+                    <ram:BilledQuantity unitCode="H87">1</ram:BilledQuantity>
+                </ram:SpecifiedLineTradeDelivery>
+                <ram:SpecifiedLineTradeSettlement>
+                    <ram:ApplicableTradeTax>
+                        <ram:TypeCode>VAT</ram:TypeCode>
+                        <ram:CategoryCode>S</ram:CategoryCode>
+                        <ram:RateApplicablePercent>{{ detail.bill.vat }}</ram:RateApplicablePercent>
+                    </ram:ApplicableTradeTax>
+                    <ram:SpecifiedTradeSettlementLineMonetarySummation>
+                        <ram:LineTotalAmount>{{ detail.amount }}</ram:LineTotalAmount>
+                    </ram:SpecifiedTradeSettlementLineMonetarySummation>
+                </ram:SpecifiedLineTradeSettlement>
+            </ram:IncludedSupplyChainTradeLineItem>
+        {% endfor %}
+
+
         <ram:ApplicableHeaderTradeAgreement>
             <ram:BuyerReference>{{ bill.client_deal_id }}</ram:BuyerReference>
             <ram:SellerTradeParty>
@@ -38,8 +112,13 @@
                     <ram:ID schemeID="0002">{{ bill.lead.subsidiary.legal_id }}</ram:ID>
                 </ram:SpecifiedLegalOrganization>
                 <ram:PostalTradeAddress>
+                    <ram:LineOne>{{ bill.lead.subsidiary.billing_street }}</ram:LineOne>
+                    <ram:CityName>{{ bill.lead.subsidiary.billing_city }}</ram:CityName>
                     <ram:CountryID>{{ bill.lead.subsidiary.billing_country }}</ram:CountryID>
                 </ram:PostalTradeAddress>
+                <ram:URIUniversalCommunication>
+                    <ram:URIID schemeID="0225">{{ bill.lead.subsidiary.legal_id }}</ram:URIID>
+                </ram:URIUniversalCommunication>
                 <ram:SpecifiedTaxRegistration>
                     <ram:ID schemeID="VA">{{ bill.lead.subsidiary.vat_id }}</ram:ID>
                 </ram:SpecifiedTaxRegistration>
@@ -61,6 +140,33 @@
                         {% endif %}
                     </ram:ID>
                 </ram:SpecifiedLegalOrganization>
+                <ram:PostalTradeAddress>
+                    <ram:CountryID>
+                        {% if bill.lead.paying_authority %}
+                            {{ bill.lead.paying_authority.company.billing_country }}
+                        {% else %}
+                            {{ bill.lead.client.organisation.billing_country }}
+                        {% endif %}
+                    </ram:CountryID>
+                </ram:PostalTradeAddress>
+                <ram:URIUniversalCommunication>
+                    <ram:URIID schemeID="0225">
+                        {% if bill.lead.paying_authority %}
+                            {{ bill.lead.paying_authority.company.legal_id }}
+                        {% else %}
+                            {{ bill.lead.client.organisation.legal_id }}
+                        {% endif %}
+                    </ram:URIID>
+                </ram:URIUniversalCommunication>
+                <ram:SpecifiedTaxRegistration>
+                    <ram:ID schemeID="VA">
+                        {% if bill.lead.paying_authority %}
+                            {{ bill.lead.paying_authority.company.vat_id }}
+                        {% else %}
+                            {{ bill.lead.client.organisation.vat_id }}
+                        {% endif %}
+                    </ram:ID>
+                </ram:SpecifiedTaxRegistration>
             </ram:BuyerTradeParty>
             <ram:BuyerOrderReferencedDocument>
                 <ram:IssuerAssignedID>{{ bill.client_deal_id | default_if_none:'' }}</ram:IssuerAssignedID>
@@ -71,14 +177,35 @@
 
         <ram:ApplicableHeaderTradeSettlement>
             <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
+            {% if bill.vat_amount > 0 %}
+                {% for rate, value in bill.taxes %}
+                    <ram:ApplicableTradeTax>
+                        <ram:CalculatedAmount>{{ value.0 }}</ram:CalculatedAmount>
+                        <ram:TypeCode>VAT</ram:TypeCode>
+                        <ram:BasisAmount>{{ value.1 }}</ram:BasisAmount>
+                        <ram:CategoryCode>S</ram:CategoryCode>
+                        <ram:RateApplicablePercent>{{ rate }}</ram:RateApplicablePercent>
+                    </ram:ApplicableTradeTax>
+                {% endfor %}
+            {% else %}{# Tax exemption #}
+                <ram:ApplicableTradeTax>
+                    <ram:TypeCode>VAT</ram:TypeCode>
+                    <ram:CategoryCode>K</ram:CategoryCode>
+                    <ram:RateApplicablePercent>0.00</ram:RateApplicablePercent>
+                    <ram:ExemptionReasonCode>VATEX-EU-IC</ram:ExemptionReasonCode>
+                </ram:ApplicableTradeTax
+            {% endif %}
             <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
-                <ram:TaxBasisTotalAmount>{{ bill.amount|unlocalize }}</ram:TaxBasisTotalAmount>
-                <ram:TaxTotalAmount currencyID="EUR">{{ bill.vat_amount|unlocalize }}</ram:TaxTotalAmount>
-                <ram:GrandTotalAmount>{{ bill.amount_with_vat|unlocalize }}</ram:GrandTotalAmount>
-                <ram:DuePayableAmount>{{ bill.amount_with_vat|unlocalize }}</ram:DuePayableAmount>
+                <ram:LineTotalAmount>{{ bill.amount }}</ram:LineTotalAmount>
+                <ram:TaxBasisTotalAmount>{{ bill.amount }}</ram:TaxBasisTotalAmount>
+                <ram:TaxTotalAmount currencyID="EUR">{{ bill.vat_amount }}</ram:TaxTotalAmount>
+                <ram:GrandTotalAmount>{{ bill.amount_with_vat }}</ram:GrandTotalAmount>
+                <ram:TotalPrepaidAmount>0.00</ram:TotalPrepaidAmount>
+                <ram:DuePayableAmount>{{ bill.amount_with_vat }}</ram:DuePayableAmount>
             </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
         </ram:ApplicableHeaderTradeSettlement>
 
     </rsm:SupplyChainTradeTransaction>
 
 </rsm:CrossIndustryInvoice>
+{% endlocalize %}
