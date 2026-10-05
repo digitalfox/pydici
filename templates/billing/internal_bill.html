@@ -92,10 +92,10 @@
                     <td class="text-right bill-total-border-left bill-total-border-top"><b>{% trans "Sub Total without taxes (€)" %}</b></td><td class="text-right bill-total-border-right bill-total-border-top"><b>{{ bill.amount|floatformat:2 }}</b></td>
                 </tr>
             {% endif %}
-            {% for vat, amount in bill.taxes %}
+            {% for vat, value in bill.taxes %}
                 <tr>
                     <td colspan=4 class="no-top-border"></td>
-                    <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ amount|floatformat:2 }}</b></td>
+                    <td class="text-right bill-total-border-left no-top-border"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-right bill-total-border-right no-top-border"><b>{{ value.0|floatformat:2 }}</b></td>
                 </tr>
             {% endfor %}
             <tr>

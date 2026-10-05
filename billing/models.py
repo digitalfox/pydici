@@ -210,14 +210,17 @@ class ClientBill(AbstractLeadBill):
             return str(self.lead)
 
     def taxes(self):
-        """Return taxes subtotal grouped by taxe rate like this [[20, 1923.23], [10, 152]]"""
+        """Return taxes subtotal and basis amount grouped by taxe rate like this [[20, 1000, 5000], [10, 500 5000]]"""
         taxes = {}
         for detail in self.billdetail_set.all():
-            taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
+            tax = taxes.get(detail.vat, [0, 0])[0] + (detail.amount_with_vat - detail.amount)
+            basis = taxes.get(detail.vat, [0, 0])[1] + detail.amount
+            taxes[detail.vat] = [tax, basis]
         for billexpense in self.billexpense_set.all():
             if not self.vat in taxes:
-                taxes[self.vat] = 0
-            taxes[self.vat] += billexpense.amount_with_vat - billexpense.amount
+                taxes[self.vat] = [0, 0]
+            taxes[self.vat][0] += billexpense.amount_with_vat - billexpense.amount
+            taxes[self.vat][1] += billexpense.amount
         return list(taxes.items())
 
     def expensesTotalWithTaxes(self):
@@ -279,10 +282,12 @@ class InternalBill(AbstractBill):
     history = AuditlogHistoryField()
 
     def taxes(self):
-        """Return taxes subtotal grouped by taxe rate like this [[20, 1923.23], [10, 152]]"""
+        """Return taxes subtotal and basis amount grouped by taxe rate like this [[20, 1000, 5000], [10, 500 5000]]"""
         taxes = {}
         for detail in self.internalbilldetail_set.all():
-            taxes[detail.vat] = taxes.get(detail.vat, 0) + (detail.amount_with_vat - detail.amount)
+            tax = taxes.get(detail.vat, [0, 0])[0] + (detail.amount_with_vat - detail.amount)
+            basis = taxes.get(detail.vat, [0, 0])[1] + detail.amount
+            taxes[detail.vat] = [tax, basis]
         return list(taxes.items())
 
     def save(self, *args, **kwargs):

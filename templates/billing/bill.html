@@ -133,10 +133,10 @@
                     </tr>
                 {% endif %}
             {% endwith %}
-            {% for vat, amount in bill.taxes %}
+            {% for vat, value in bill.taxes %}
                 <tr>
                     <td colspan=4 class="noborder"></td>
-                    <td class="text-end bill-total-border-left noborder"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-end bill-total-border-right noborder"><b>{{ amount|floatformat:2 }}</b></td>
+                    <td class="text-end bill-total-border-left noborder"><b>{% trans "VAT" %} {{ vat|floatformat:-2 }} %</b></td><td class="text-end bill-total-border-right noborder"><b>{{ value.0|floatformat:2 }}</b></td>
                 </tr>
             {% endfor %}
             <tr>
