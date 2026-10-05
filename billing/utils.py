@@ -5,6 +5,7 @@ appropriate to live in Billing models or view
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
 
+import glob
 import json
 from os import path
 import os
@@ -313,7 +314,16 @@ def format_bill_pdf(pdf_buffer, bill):
     @param pdf_buffer: PDF buffer as a BytesIO object
     @return: PDF buffer as a BytesIO object"""
     # Make it PDF/A-3B compliant
-    cmd = "gs -q -dPDFA=3 -dBATCH -dNOPAUSE -sColorConversionStrategy=UseDeviceIndependentColor -sDEVICE=pdfwrite -dPDFACompatibilityPolicy=1 -sOutputFile=- -"
+    gs_dir_candidates = sorted(glob.glob("/usr/share/ghostscript/*/iccprofiles/"))
+    if gs_dir_candidates:
+        gs_dir_path = gs_dir_candidates[-1]  # highest version
+    else:
+        raise RuntimeError("No Ghostscript ICC profiles found, cannot create PDF/A-3B compliant PDF")
+
+    pdfa_def_path = path.abspath(path.join(path.dirname(__file__), "pdfa_def.ps"))
+
+    cmd = f"gs -q -sICC_PATH={gs_dir_path}srgb.icc --permit-file-read={gs_dir_path} -dBATCH -dNOPAUSE -sDEVICE=pdfwrite -dPDFA=3 -dPDFACompatibilityPolicy=1 -sColorConversionStrategy=RGB -sProcessColorModel=DeviceRGB -sOutputFile=- {pdfa_def_path} -"
+
     try:
         pdf_buffer.seek(0)  # Be kind, rewind
         gs_in = tempfile.TemporaryFile()
@@ -327,10 +337,10 @@ def format_bill_pdf(pdf_buffer, bill):
             facturx_xml = get_template("billing/invoice-factur-x.xml").render({"bill": bill})
             facturx_xml = facturx_xml.encode("utf-8")
             pdf_metadata = {
-                "author": "enioka",
+                "author": "pydici",
                 "keywords": "Factur-X, Invoice, pydici",
-                "title": "enioka Invoice %s" % bill.bill_id,
-                "subject": "Factur-X invoice %s dated %s issued by enioka"
+                "title": "Invoice %s" % bill.bill_id,
+                "subject": "Factur-X invoice %s dated %s issued by pydici software"
                 % (bill.bill_id, bill.creation_date),
             }
             pdf = facturx.generate_from_binary(gs_out.read(), facturx_xml, pdf_metadata=pdf_metadata, lang=bill.lang)
