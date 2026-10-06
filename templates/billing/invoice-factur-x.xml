@@ -13,7 +13,7 @@
 
     <rsm:ExchangedDocumentContext>
         <ram:BusinessProcessSpecifiedDocumentContextParameter>
-            <ram:ID>A1</ram:ID>
+            <ram:ID>S1</ram:ID>
         </ram:BusinessProcessSpecifiedDocumentContextParameter>
         <ram:GuidelineSpecifiedDocumentContextParameter>
             <ram:ID>urn:cen.eu:en16931:2017</ram:ID>
