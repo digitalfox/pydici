@@ -37,17 +37,7 @@
                 </ram:AssociatedDocumentLineDocument>
                 <ram:SpecifiedTradeProduct>
                     <ram:Name>{{ detail.mission.get_billing_mode_display }}</ram:Name>
-                    <ram:Description>
-                        {% if detail.mission.billing_mode == "TIME_SPENT" %}
-                            {% if bill.anonymize_profile %}
-                                {% if detail.label %}{{ detail.label }}{% else %}{{detail.consultant.profil }}{% endif %}
-                            {% else %}
-                                {{ detail.consultant|default_if_none:"" }}{% if detail.label %} - {{ detail.label }}{% endif %}
-                            {% endif %}
-                        {% else %}
-                            Fixed price{% if detail.label %} - {{ detail.label }}{% endif %}
-                        {% endif %}
-                    </ram:Description>
+                    <ram:Description>{% if detail.mission.billing_mode == "TIME_SPENT" %}{% if bill.anonymize_profile %}{% if detail.label %}{{ detail.label }}{% else %}{{detail.consultant.profil }}{% endif %}{% else %}{{ detail.consultant|default_if_none:"" }}{% if detail.label %} - {{ detail.label }}{% endif %}{% endif %}{% else %}Fixed price{% if detail.label %} - {{ detail.label }}{% endif %}{% endif %}</ram:Description>
                 </ram:SpecifiedTradeProduct>
                 <ram:SpecifiedLineTradeAgreement>
                     <ram:NetPriceProductTradePrice>
@@ -77,9 +67,7 @@
                 </ram:AssociatedDocumentLineDocument>
                 <ram:SpecifiedTradeProduct>
                     <ram:Name>{{ detail.label }}</ram:Name>
-                    <ram:Description>
-                        {{ detail.label }} - {{ detail.expense_date }} - {{ detail.expense.user.username|link_to_consultant|striptags }}
-                    </ram:Description>
+                    <ram:Description>{{ detail.label }} - {{ detail.expense_date }} - {{ detail.expense.user.username|link_to_consultant|striptags }}</ram:Description>
                 </ram:SpecifiedTradeProduct>
                 <ram:SpecifiedLineTradeAgreement>
                     <ram:NetPriceProductTradePrice>
@@ -148,6 +136,10 @@
             <ram:BuyerOrderReferencedDocument>
                 <ram:IssuerAssignedID>{{ bill.client_deal_id | default_if_none:'' }}</ram:IssuerAssignedID>
             </ram:BuyerOrderReferencedDocument>
+            <ram:SpecifiedProcuringProject>
+                <ram:ID>{{ bill.lead.deal_id }}</ram:ID>
+                <ram:Name>{{ bill.lead.name }}</ram:Name>
+            </ram:SpecifiedProcuringProject>
         </ram:ApplicableHeaderTradeAgreement>
         <ram:ApplicableHeaderTradeDelivery/>
 
@@ -171,6 +163,12 @@
                     <ram:ExemptionReasonCode>VATEX-EU-IC</ram:ExemptionReasonCode>
                 </ram:ApplicableTradeTax
             {% endif %}
+            <ram:SpecifiedTradePaymentTerms>
+                <ram:Description>{{ bill.lead.subsidiary.payment_description }}</ram:Description>
+                <ram:DueDateDateTime>
+                    <udt:DateTimeString format="102">{{ bill.due_date|date:'Ymd' }}</udt:DateTimeString>
+                </ram:DueDateDateTime>
+            </ram:SpecifiedTradePaymentTerms>
             <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
                 <ram:LineTotalAmount>{{ bill.amount }}</ram:LineTotalAmount>
                 <ram:TaxBasisTotalAmount>{{ bill.amount }}</ram:TaxBasisTotalAmount>
