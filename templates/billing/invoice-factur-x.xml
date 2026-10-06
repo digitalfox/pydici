@@ -152,6 +152,7 @@
                         <ram:TypeCode>VAT</ram:TypeCode>
                         <ram:BasisAmount>{{ value.1 }}</ram:BasisAmount>
                         <ram:CategoryCode>S</ram:CategoryCode>
+                        <ram:DueDateTypeCode>72</ram:DueDateTypeCode> {# 72 = Payment date (VAT on cash receipts) #}
                         <ram:RateApplicablePercent>{{ rate }}</ram:RateApplicablePercent>
                     </ram:ApplicableTradeTax>
                 {% endfor %}
