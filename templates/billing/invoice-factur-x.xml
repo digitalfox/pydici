@@ -103,7 +103,6 @@
             </ram:IncludedSupplyChainTradeLineItem>
         {% endfor %}
 
-
         <ram:ApplicableHeaderTradeAgreement>
             {% if bill.client_deal_id %}
                 <ram:BuyerReference>{{ bill.client_deal_id }}</ram:BuyerReference>
@@ -134,47 +133,22 @@
                     {% endif %}
                 </ram:Name>
                 <ram:SpecifiedLegalOrganization>
-                    <ram:ID schemeID="0002">
-                        {% if bill.lead.paying_authority %}
-                            {{ bill.lead.paying_authority.company.legal_id }}
-                        {% else %}
-                            {{ bill.lead.client.organisation.legal_id }}
-                        {% endif %}
-                    </ram:ID>
+                    <ram:ID schemeID="0002">{% if bill.lead.paying_authority %}{{ bill.lead.paying_authority.company.legal_id }}{% else %}{{ bill.lead.client.organisation.legal_id }}{% endif %}</ram:ID>
                 </ram:SpecifiedLegalOrganization>
                 <ram:PostalTradeAddress>
-                    <ram:CountryID>
-                        {% if bill.lead.paying_authority %}
-                            {{ bill.lead.paying_authority.company.billing_country }}
-                        {% else %}
-                            {{ bill.lead.client.organisation.billing_country }}
-                        {% endif %}
-                    </ram:CountryID>
+                    <ram:CountryID>{% if bill.lead.paying_authority %}{{ bill.lead.paying_authority.company.billing_country }}{% else %}{{ bill.lead.client.organisation.billing_country }}{% endif %}</ram:CountryID>
                 </ram:PostalTradeAddress>
                 <ram:URIUniversalCommunication>
-                    <ram:URIID schemeID="0225">
-                        {% if bill.lead.paying_authority %}
-                            {{ bill.lead.paying_authority.company.legal_id }}
-                        {% else %}
-                            {{ bill.lead.client.organisation.legal_id }}
-                        {% endif %}
-                    </ram:URIID>
+                    <ram:URIID schemeID="0225">{% if bill.lead.paying_authority %}{{ bill.lead.paying_authority.company.legal_id }}{% else %}{{ bill.lead.client.organisation.legal_id }}{% endif %}</ram:URIID>
                 </ram:URIUniversalCommunication>
                 <ram:SpecifiedTaxRegistration>
-                    <ram:ID schemeID="VA">
-                        {% if bill.lead.paying_authority %}
-                            {{ bill.lead.paying_authority.company.vat_id }}
-                        {% else %}
-                            {{ bill.lead.client.organisation.vat_id }}
-                        {% endif %}
-                    </ram:ID>
+                    <ram:ID schemeID="VA">{% if bill.lead.paying_authority %}{{ bill.lead.paying_authority.company.vat_id }}{% else %}{{ bill.lead.client.organisation.vat_id }}{% endif %}</ram:ID>
                 </ram:SpecifiedTaxRegistration>
             </ram:BuyerTradeParty>
             <ram:BuyerOrderReferencedDocument>
                 <ram:IssuerAssignedID>{{ bill.client_deal_id | default_if_none:'' }}</ram:IssuerAssignedID>
             </ram:BuyerOrderReferencedDocument>
         </ram:ApplicableHeaderTradeAgreement>
-
         <ram:ApplicableHeaderTradeDelivery/>
 
         <ram:ApplicableHeaderTradeSettlement>
