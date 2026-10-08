@@ -145,6 +145,12 @@
 
         <ram:ApplicableHeaderTradeSettlement>
             <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
+            <ram:SpecifiedTradeSettlementPaymentMeans>
+                <ram:TypeCode>30</ram:TypeCode>
+                <ram:PayeePartyCreditorFinancialAccount>
+                    <ram:IBANID>{{ bill.lead.subsidiary.iban }}</ram:IBANID>
+                </ram:PayeePartyCreditorFinancialAccount>
+            </ram:SpecifiedTradeSettlementPaymentMeans>
             {% if bill.vat_amount > 0 %}
                 {% for rate, value in bill.taxes %}
                     <ram:ApplicableTradeTax>
