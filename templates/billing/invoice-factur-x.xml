@@ -143,6 +143,9 @@
             <ram:BuyerOrderReferencedDocument>
                 <ram:IssuerAssignedID>{{ bill.client_deal_id | default_if_none:'' }}</ram:IssuerAssignedID>
             </ram:BuyerOrderReferencedDocument>
+            <ram:ContractReferencedDocument>
+                <ram:IssuerAssignedID>{{ bill.lead.deal_id }}</ram:IssuerAssignedID>
+            </ram:ContractReferencedDocument>
             <ram:SpecifiedProcuringProject>
                 <ram:ID>{{ bill.lead.deal_id }}</ram:ID>
                 <ram:Name>{{ bill.lead.name }}</ram:Name>
