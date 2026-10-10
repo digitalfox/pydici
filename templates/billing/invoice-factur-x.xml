@@ -27,6 +27,13 @@
         <ram:IssueDateTime>
             <udt:DateTimeString format="102">{{ bill.creation_date|date:'Ymd' }}</udt:DateTimeString>
         </ram:IssueDateTime>
+        <ram:IncludedNote>
+            <ram:Content>{{ bill.client_comment }}</ram:Content>
+        </ram:IncludedNote>
+        <ram:IncludedNote>
+            <ram:Content>{{ bill.lead.subsidiary.payment_description }}</ram:Content>
+            <ram:SubjectCode>PMD</ram:SubjectCode>
+        </ram:IncludedNote>
     </rsm:ExchangedDocument>
 
     <rsm:SupplyChainTradeTransaction>
