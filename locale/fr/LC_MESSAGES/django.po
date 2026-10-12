@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 09:41+0200\n"
-"PO-Revision-Date: 2026-10-12 09:41+0200\n"
+"POT-Creation-Date: 2026-10-12 10:50+0200\n"
+"PO-Revision-Date: 2026-10-12 10:49+0200\n"
 "Last-Translator: Sébastien Renard <sebastien.renard@enioka.com>\n"
 "Language-Team: French <kde-francophone@kde.org>\n"
 "Language: fr\n"
@@ -5361,12 +5361,12 @@ msgid "won rate (new business)"
 msgstr "taux de transformation (nouveau business)"
 
 #: templates/leads/graph_won_rate.html:16
-msgid "won rate (renewal) MA180"
-msgstr "Taux de transformation (renouvellement) 6 mois"
+msgid "won rate (renewal) last 3 months"
+msgstr "taux de transformation (renouvellement) 3 mois"
 
 #: templates/leads/graph_won_rate.html:17
-msgid "won rate (new business) MA180"
-msgstr "taux de transformation (nouveau business) 6 mois"
+msgid "won rate (new business) last 3 months"
+msgstr "taux de transformation (nouveau business) 3 mois"
 
 #: templates/leads/graph_won_rate.html:43
 #, python-format
@@ -6590,6 +6590,12 @@ msgstr "Proportion de sous traitance par produit"
 #: templates/staffing/turnover_pivotable.html:131
 msgid "Sum ratio"
 msgstr "Ratio de sommes"
+
+#~ msgid "won rate (renewal) MA180"
+#~ msgstr "Taux de transformation (renouvellement) 6 mois"
+
+#~ msgid "won rate (new business) MA180"
+#~ msgstr "taux de transformation (nouveau business) 6 mois"
 
 #~ msgid "won rate"
 #~ msgstr "Taux de transformation"

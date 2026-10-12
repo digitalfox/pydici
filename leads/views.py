@@ -496,8 +496,8 @@ def graph_leads_won_rate(request):
         graph_data.append(["x"] + months_iso)
         graph_data.append(["won-rate-renewal"] + [rates_renewal.get(m) for m in all_months])
         graph_data.append(["won-rate-newbiz"] + [rates_newbiz.get(m) for m in all_months])
-        graph_data.append(["won-rate-renewal-MA"] + moving_average([rates_renewal.get(m) for m in all_months], 6, round_digits=2))
-        graph_data.append(["won-rate-newbiz-MA"] + moving_average([rates_newbiz.get(m) for m in all_months], 6, round_digits=2))
+        graph_data.append(["won-rate-renewal-MA"] + moving_average([rates_renewal.get(m) for m in all_months], 3, round_digits=2))
+        graph_data.append(["won-rate-newbiz-MA"] + moving_average([rates_newbiz.get(m) for m in all_months], 3, round_digits=2))
 
     return render(request, "leads/graph_won_rate.html",
               {"graph_data": json.dumps(graph_data) if graph_data else None, "colors": COLORS, "user": request.user})
