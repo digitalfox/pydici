@@ -11,10 +11,17 @@
              columns: {{ graph_data | safe }},
              type: 'spline',
              names: {
-                "won-rate": '{% trans "won rate" %}',
-                "won-rate-MA90": '{% trans "won rate MA90" %}',
-                "won-rate-MA180": '{% trans "won rate MA180" %}',
+                "won-rate-renewal": '{% trans "won rate (renewal)" %}',
+                "won-rate-newbiz": '{% trans "won rate (new business)" %}',
+                "won-rate-renewal-MA": '{% trans "won rate (renewal) MA180" %}',
+                "won-rate-newbiz-MA": '{% trans "won rate (new business) MA180" %}',
                 },
+                colors: {
+                    "won-rate-renewal": "{{ colors.0 }}",
+                    "won-rate-newbiz": "{{ colors.1 }}",
+                    "won-rate-renewal-MA": "{{ colors.0 }}",
+                    "won-rate-newbiz-MA": "{{ colors.1 }}"
+                }
         },
         spline: {interpolation: { type: "monotone" }},
         point: {
@@ -39,6 +46,9 @@
                 max: 100,
                 padding: 0,
             },
+        },
+        line: {
+            classes: ["line-plain", "line-plain", "line-dotted", "line-dotted"],
         },
       });
     </script>

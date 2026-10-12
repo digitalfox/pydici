@@ -458,40 +458,49 @@ def graph_leads_won_rate(request):
     graph_data = []
     start_date = (datetime.today() - timedelta(3 * 365))
     subsidiary = get_subsidiary_from_session(request)
-    leads = Lead.objects.filter(creation_date__gt=start_date)
+    queryset = Lead.objects.filter(creation_date__gt=start_date)
     if subsidiary:
-        leads = leads.filter(subsidiary=subsidiary)
-    leads = leads.annotate(month=TruncMonth("creation_date")).order_by("month")
-    leads = leads.values("month", "state").annotate(Count("state"))
-    leads_state = OrderedDict()
-    won_rate = []
-    months = []
+        queryset = queryset.filter(subsidiary=subsidiary)
 
-    # compute lead state for each month
-    for lead in leads:
-        month = lead["month"]
-        if month not in leads_state:
-            leads_state[month] = {}
-        leads_state[month][lead["state"]] = lead["state__count"]
+    def compute_won_rates_dict(leads_qs):
+        """Compute won rate dict keyed by month for a given queryset."""
+        leads = leads_qs.annotate(month=TruncMonth("creation_date")).order_by("month")
+        leads = leads.values("month", "state").annotate(Count("state"))
+        leads_state = OrderedDict()
 
-    # compute won rate
-    for month, lead_state in leads_state.items():
-        if lead_state.get("WON", 0) > 0:
-            won_rate.append(round(100* lead_state.get("WON", 0) / (lead_state.get("LOST", 0) +
-                                                             lead_state.get("FORGIVEN", 0) +
-                                                             lead_state.get("WON", 0)), 2))
-            months.append(month.date().isoformat())
+        for lead in leads:
+            month = lead["month"]
+            if month not in leads_state:
+                leads_state[month] = {}
+            leads_state[month][lead["state"]] = lead["state__count"]
 
-    if len(months) > 0:
-        graph_data.append(["x"] + months)
-        graph_data.append(["won-rate"] + won_rate)
-        graph_data.append(["won-rate-MA90"] + moving_average(won_rate, 3, round_digits=2))
-        graph_data.append(["won-rate-MA180"] + moving_average(won_rate, 6, round_digits=2))
+        rates = {}
+        for month, lead_state in leads_state.items():
+            if lead_state.get("WON", 0) > 0:
+                rates[month] = round(100 * lead_state.get("WON", 0) / (
+                    lead_state.get("LOST", 0) +
+                    lead_state.get("FORGIVEN", 0) +
+                    lead_state.get("WON", 0)), 2)
+
+        return rates
+
+    # Compute won rates for new business and renewal
+    rates_renewal = compute_won_rates_dict(queryset.filter(renewal=True))
+    rates_newbiz = compute_won_rates_dict(queryset.filter(renewal=False))
+
+    # Merge all months and sort to share a common x-axis
+    all_months = sorted(set(rates_renewal.keys()) | set(rates_newbiz.keys()))
+
+    if len(all_months) > 0:
+        months_iso = [m.date().isoformat() for m in all_months]
+        graph_data.append(["x"] + months_iso)
+        graph_data.append(["won-rate-renewal"] + [rates_renewal.get(m) for m in all_months])
+        graph_data.append(["won-rate-newbiz"] + [rates_newbiz.get(m) for m in all_months])
+        graph_data.append(["won-rate-renewal-MA"] + moving_average([rates_renewal.get(m) for m in all_months], 6, round_digits=2))
+        graph_data.append(["won-rate-newbiz-MA"] + moving_average([rates_newbiz.get(m) for m in all_months], 6, round_digits=2))
 
     return render(request, "leads/graph_won_rate.html",
-              {"graph_data": json.dumps(graph_data) if graph_data else None,
-               "series_colors": COLORS,
-               "user": request.user})
+              {"graph_data": json.dumps(graph_data) if graph_data else None, "colors": COLORS, "user": request.user})
 
 
 @pydici_non_public

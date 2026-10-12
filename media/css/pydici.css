@@ -373,6 +373,8 @@ div.ui-tooltip {
 #consultant_rate_graph .bb-line { stroke-width: 2px; }
 #leads_bar .line-class-sales { stroke-dasharray: 2 4; stroke-width: 2px; }
 #leads_bar .line-class-sales_won { stroke-width: 3px; }
+#won_rate_graph .line-plain {  stroke-width: 2px; }
+#won_rate_graph .line-dotted { stroke-width: 2px;  stroke-dasharray: 2 4;}
 
 /* Expense image in modal or inline */
 .expense-receipt object {
