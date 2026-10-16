@@ -2544,7 +2544,7 @@ def graph_work_backlog(request):
     next_month = nextMonth(month)
     # estimate won backlog
     holidays_days = PublicHoliday.objects.filter(day__gte=month, day__lte=next_month).values_list("day", flat=True)
-    month_days = working_days(month, holidays=holidays_days, upToToday=True)
+    month_days = working_days(month, holidays=holidays_days)
     missions_qs = Mission.objects.filter(active=True, nature="PROD", price__gt=0)
     for backlog_name, missions in (("won", missions_qs.filter(lead__state="WON")), ("sent", missions_qs.exclude(lead__state="WON"))):
         for mission in missions:
@@ -2552,7 +2552,7 @@ def graph_work_backlog(request):
                 _done_days, done_amount = mission.done_work_period(None, today, filter_on_subsidiary=subsidiary)
             else:
                 _done_days, done_amount = mission.done_work_period(None, today)
-            backlog[backlog_name] += float((mission.price or 0) / 1000) - done_amount
+            backlog[backlog_name] += float((mission.price or 0) * 1000) - done_amount
 
     # Estimate capacity
     consultant_holidays = dict(Timesheet.objects.filter(mission__nature="HOLIDAYS", working_date__gte=today, working_date__lt=next_month).order_by("consultant").values_list("consultant").annotate(Sum("charge")))
