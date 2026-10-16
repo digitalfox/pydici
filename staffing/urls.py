@@ -67,6 +67,7 @@ staffing_urls = [ re_path(r'^pdcreview/?$', v.pdc_review, name='pdcreview-index'
                   re_path(r'^graph/timesheet-rates/?$', v.graph_timesheet_rates_bar, name="graph_timesheet_rates_bar"),
                   re_path(r'^graph/profile-rates/?$', v.graph_profile_rates, name="graph_profile_rates"),
                   re_path(r'^graph/rates/consultant/(?P<consultant_id>\d+)', v.graph_consultant_rates, name="graph_consultant_rates"),
+                  re_path(r'^graph/work_backlog/', v.graph_work_backlog, name="graph_work_backlog"),
                   re_path(r'^api/mission_list/?$', a.mission_list, name="mission_list"),
                   re_path(r'^api/mission_list/(?P<start_date>\d{6})/?$', a.mission_list, name="mission_list"),
                   re_path(r'^api/mission_list/(?P<start_date>\d{6})/(?P<end_date>\d{6})/?$', a.mission_list, name="mission_list"),

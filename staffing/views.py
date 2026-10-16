@@ -3,8 +3,6 @@ Pydici staffing views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-import time
-
 from datetime import date, timedelta, datetime
 import csv
 import json
@@ -41,7 +39,7 @@ from django_weasyprint import WeasyTemplateView
 from auditlog.models import LogEntry
 
 from staffing.models import Staffing, Mission, PublicHoliday, Timesheet, FinancialCondition, LunchTicket, HolidayBalance
-from people.models import Consultant, Subsidiary, RateObjective, ConsultantLocation
+from people.models import Consultant, Subsidiary, RateObjective
 from leads.models import Lead
 from people.models import ConsultantProfile
 from people.forms import ConsultantFilterTagForm
@@ -2530,4 +2528,53 @@ def graph_consultant_rates(request, consultant_id):
 
     return render(request, "staffing/graph_consultant_rate.html",
                   {"graph_data": json.dumps(graph_data),
+                   "user": request.user})
+
+@pydici_non_public
+@pydici_feature("leads")
+@cache_page(60 * 60 * 24)
+def graph_work_backlog(request):
+    """Evaluate current missions and lead backlog expressed in month of team production"""
+    subsidiary = get_subsidiary_from_session(request)
+    graph_data = []
+    backlog = {"won": 0, "sent": 0, "commercial": 0}
+    capacity = 0
+    today = date.today()
+    month = today.replace(day=1)
+    next_month = nextMonth(month)
+    # estimate won backlog
+    holidays_days = PublicHoliday.objects.filter(day__gte=month, day__lte=next_month).values_list("day", flat=True)
+    month_days = working_days(month, holidays=holidays_days, upToToday=True)
+    missions_qs = Mission.objects.filter(active=True, nature="PROD", price__gt=0)
+    for backlog_name, missions in (("won", missions_qs.filter(lead__state="WON")), ("sent", missions_qs.exclude(lead__state="WON"))):
+        for mission in missions:
+            if subsidiary:
+                _done_days, done_amount = mission.done_work_period(None, today, filter_on_subsidiary=subsidiary)
+            else:
+                _done_days, done_amount = mission.done_work_period(None, today)
+            backlog[backlog_name] += float(mission.price * 1000) - done_amount
+
+    # Estimate capacity
+    consultant_holidays = dict(Timesheet.objects.filter(mission__nature="HOLIDAYS", working_date__gte=today, working_date__lt=next_month).order_by("consultant").values_list("consultant").annotate(Sum("charge")))
+    consultants = Consultant.objects.filter(active=True, productive=True)
+    if subsidiary:
+        consultants = consultants.filter(company=subsidiary)
+    for consultant in consultants:
+        try:
+            daily_rate_obj = consultant.get_rate_objective(working_date=month, rate_type="DAILY_RATE").rate
+            prod_rate_obj = float(
+                consultant.get_rate_objective(working_date=month, rate_type="PROD_RATE").rate) / 100
+            capacity += daily_rate_obj * prod_rate_obj * (month_days - consultant_holidays.get(consultant.id ,0))
+        except AttributeError:
+            pass  # At least one rate objective is missing
+
+    # Active leads without missions
+    backlog["commercial"] = float(Lead.objects.active().annotate(count=Count("mission")).filter(count=0).aggregate(Sum("sales")).get("sales__sum", 0)) * 1000
+
+    graph_data.append([_("commercial backlog"), round(backlog["commercial"]/capacity, 1) ])
+    graph_data.append([_("planned backlog"), round(backlog["sent"]/capacity, 1) ])
+    graph_data.append([_("won backlog"), round(backlog["won"]/capacity, 1) ])
+
+    return render(request, "staffing/graph_mission_backlog.html",
+                  {"work_backlog_data": json.dumps(graph_data),
                    "user": request.user})

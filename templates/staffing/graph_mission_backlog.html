@@ -1,0 +1,37 @@
+{# Fragment that display mission backlog graph to be included with an hxr load #}
+{# One must include in its extrajs block core/_billboard.html to load according js/css #}
+{% load i18n %}
+{% load l10n %}
+
+{% if work_backlog_data %}
+<div class="align-self-center">
+    <div id="graph_work_backlog" class="mt-2"></div>
+    <h5 class="mt-2"><div class="text-center">{% trans "Work backlog" %}</div></h5>
+    <script type="text/javascript">
+    $(document).ready(function() {
+            var chart_leads_stat = bb.generate({
+                bindto: '#graph_work_backlog',
+                data: {
+                    columns: {{ work_backlog_data | safe }},
+                    type : 'gauge'
+                },
+                gauge: {
+                    units: "{% trans 'months' %}",
+                    type: "multi",
+                    label: {
+                        format: function (value) { return value; },
+                        },
+                    min: 0,
+                    max: 3,
+                 },
+                tooltip: {
+                    format: {
+                        value: function (value, ratio, id, index) { return value; }
+                        }
+                    },
+
+            });
+    });
+    </script>
+</div>
+{% endif %}
