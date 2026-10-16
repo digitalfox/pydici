@@ -2577,4 +2577,5 @@ def graph_work_backlog(request):
 
     return render(request, "staffing/graph_mission_backlog.html",
                   {"work_backlog_data": json.dumps(graph_data),
+                   "backlog_max": max(3, *[i[1] for i in graph_data]),
                    "user": request.user})
