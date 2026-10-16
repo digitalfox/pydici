@@ -2552,7 +2552,7 @@ def graph_work_backlog(request):
                 _done_days, done_amount = mission.done_work_period(None, today, filter_on_subsidiary=subsidiary)
             else:
                 _done_days, done_amount = mission.done_work_period(None, today)
-            backlog[backlog_name] += float(mission.price * 1000) - done_amount
+            backlog[backlog_name] += float((mission.price or 0) / 1000) - done_amount
 
     # Estimate capacity
     consultant_holidays = dict(Timesheet.objects.filter(mission__nature="HOLIDAYS", working_date__gte=today, working_date__lt=next_month).order_by("consultant").values_list("consultant").annotate(Sum("charge")))
