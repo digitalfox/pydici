@@ -422,7 +422,7 @@ def graph_leads_bar(request):
 
     # Gathering data
     subsidiary = get_subsidiary_from_session(request)
-    leads = Lead.objects.filter(creation_date__gt=date.today() - timedelta(3 * 365))
+    leads = Lead.objects.filter(creation_date__gt=date.today() - timedelta(2 * 365))
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
 
@@ -456,7 +456,7 @@ def graph_leads_bar(request):
 def graph_leads_won_rate(request):
     """Graph rates of won leads for given (or all) subsidiary"""
     graph_data = []
-    start_date = (datetime.today() - timedelta(3 * 365))
+    start_date = (datetime.today() - timedelta(2 * 365))
     subsidiary = get_subsidiary_from_session(request)
     queryset = Lead.objects.filter(creation_date__gt=start_date)
     if subsidiary:
@@ -514,7 +514,7 @@ def graph_leads_pipe(request):
     output_count = {}
     output_amount = {}
     output_states = ("WON", "LOST", "FORGIVEN", "SLEEPING")
-    start_date = (datetime.today() - timedelta(3 * 365))
+    start_date = (datetime.today() - timedelta(2 * 365))
     subsidiary = get_subsidiary_from_session(request)
     leads = Lead.objects.filter(creation_date__gt=start_date)
     leads = leads.annotate(timesheet_start=Min("mission__timesheet__working_date"))
