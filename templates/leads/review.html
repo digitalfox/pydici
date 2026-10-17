@@ -11,7 +11,7 @@
 {% block content %}
     <div class="row mt-3">
         <div hx-get="{% url 'leads:graph_leads_bar' %}?{{scope_current_filter}}" hx-trigger="load" class="col-9"><div class="loader m-3"></div></div>
-        <div hx-get="{% url 'staffing:graph_work_backlog' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-3"><div class="loader m-3"></div></div>
+        <div hx-get="{% url 'staffing:graph_work_backlog' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-3 align-self-center"><div class="loader m-3"></div></div>
     </div>
 
     <div hx-get="{% url 'leads:graph_leads_activity' %}?{{ scope_current_filter }}" hx-trigger="load" class="col-12"><div class="loader m-3"></div></div>

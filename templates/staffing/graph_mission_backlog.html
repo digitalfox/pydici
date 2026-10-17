@@ -4,8 +4,8 @@
 {% load l10n %}
 
 {% if work_backlog_data %}
-<div class="align-self-center">
-    <div id="graph_work_backlog" class="mt-2"></div>
+
+    <div id="graph_work_backlog"></div>
     <h5 class="mt-2"><div class="text-center">{% trans "Work backlog" %}</div></h5>
     <script type="text/javascript">
     $(document).ready(function() {
@@ -33,5 +33,5 @@
             });
     });
     </script>
-</div>
+
 {% endif %}
