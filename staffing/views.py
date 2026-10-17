@@ -2546,12 +2546,11 @@ def graph_work_backlog(request):
     holidays_days = PublicHoliday.objects.filter(day__gte=month, day__lte=next_month).values_list("day", flat=True)
     month_days = working_days(month, holidays=holidays_days)
     missions_qs = Mission.objects.filter(active=True, nature="PROD", price__gt=0)
+    if subsidiary:
+        missions_qs = missions_qs.filter(subsidiary=subsidiary)
     for backlog_name, missions in (("won", missions_qs.filter(lead__state="WON")), ("sent", missions_qs.exclude(lead__state="WON"))):
         for mission in missions:
-            if subsidiary:
-                _done_days, done_amount = mission.done_work_period(None, today, filter_on_subsidiary=subsidiary)
-            else:
-                _done_days, done_amount = mission.done_work_period(None, today)
+            _done_days, done_amount = mission.done_work_period(None, today)
             backlog[backlog_name] += float((mission.price or 0) * 1000) - done_amount
 
     # Estimate capacity
@@ -2569,7 +2568,10 @@ def graph_work_backlog(request):
             pass  # At least one rate objective is missing
 
     # Active leads without missions
-    backlog["commercial"] = float(Lead.objects.active().annotate(count=Count("mission")).filter(count=0).aggregate(Sum("sales")).get("sales__sum", 0)) * 1000
+    leads_qs = Lead.objects.active()
+    if subsidiary:
+        leads_qs = leads_qs.filter(subsidiary=subsidiary)
+    backlog["commercial"] = float(leads_qs.annotate(count=Count("mission")).filter(count=0).aggregate(Sum("sales")).get("sales__sum", 0)) * 1000
 
     graph_data.append([_("commercial backlog"), round(backlog["commercial"]/capacity, 1) ])
     graph_data.append([_("planned backlog"), round(backlog["sent"]/capacity, 1) ])
