@@ -2538,6 +2538,7 @@ def graph_work_backlog(request):
     subsidiary = get_subsidiary_from_session(request)
     graph_data = []
     backlog = {"won": 0, "sent": 0, "commercial": 0}
+    backlog_max = 0
     capacity = 0
     today = date.today()
     month = today.replace(day=1)
@@ -2573,11 +2574,13 @@ def graph_work_backlog(request):
         leads_qs = leads_qs.filter(subsidiary=subsidiary)
     backlog["commercial"] = float(leads_qs.annotate(count=Count("mission")).filter(count=0).aggregate(Sum("sales")).get("sales__sum", 0)) * 1000
 
-    graph_data.append([_("commercial backlog"), round(backlog["commercial"]/capacity, 1) ])
-    graph_data.append([_("planned backlog"), round(backlog["sent"]/capacity, 1) ])
-    graph_data.append([_("won backlog"), round(backlog["won"]/capacity, 1) ])
+    if capacity > 0:
+        graph_data.append([_("commercial backlog"), round(backlog["commercial"]/capacity, 1) ])
+        graph_data.append([_("planned backlog"), round(backlog["sent"]/capacity, 1) ])
+        graph_data.append([_("won backlog"), round(backlog["won"]/capacity, 1) ])
+        backlog_max = max(4, *[i[1] for i in graph_data])
 
     return render(request, "staffing/graph_mission_backlog.html",
                   {"work_backlog_data": json.dumps(graph_data),
-                   "backlog_max": max(3, *[i[1] for i in graph_data]),
+                   "backlog_max": backlog_max,
                    "user": request.user})
