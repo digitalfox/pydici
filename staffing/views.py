@@ -2171,7 +2171,7 @@ def optimise_pdc(request):
 @pydici_non_public
 @pydici_feature("reports")
 @cache_page(60 * 60 * 24)
-def turnover_pivotable(request, year=None):
+def turnover_pivotable(request, start_year=None, end_year=None):
     """Turnover analysis (per people and mission) based on timesheet production"""
     data = []
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
@@ -2186,18 +2186,27 @@ def turnover_pivotable(request, year=None):
     if current_subsidiary:
         subsidiaries = subsidiaries.filter(id=current_subsidiary.id)
 
-    span = min(5, int(request.GET.get("span", 1)))
-
     years = get_fiscal_years_from_qs(missions, "lead__creation_date")
 
-    if year is None and years:
-        year = years[-1]
-    year = int(year)
+    if start_year is None:
+        if years:
+            year = years[-1]
+        else:
+            year = date.today().year
+    else:
+        year = int(start_year[0:4])
+
+    if end_year is None:
+        span = 1
+    else:
+        span = int(end_year[0:4]) - year
+        span = min(span, 5)
+        span = max(span, 1)
+
     start = date(year, month, 1)
     end = date(year + span, month, 1)
-    end = min(end, date.today().replace(day=1))
-    missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
 
+    missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
     missions = missions.distinct()
     missions = missions.select_related("responsible", "lead__client__contact", "lead__client__organisation__company", "subsidiary",
                          "lead__business_broker__company", "lead__business_broker__contact", "marketing_product")
@@ -2263,8 +2272,8 @@ def turnover_pivotable(request, year=None):
 
     return render(request, "staffing/turnover_pivotable.html", { "data": json.dumps(data),
                                                     "derivedAttributes": "{}",
-                                                    "years": years,
-                                                    "selected_year": year})
+                                                    "start_date": start,
+                                                    "end_date": end})
 
 
 @pydici_non_public
