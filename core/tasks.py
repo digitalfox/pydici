@@ -41,6 +41,8 @@ def view_warmup():
     for url_name, view, kwargs, subsidiary_context in (
             ("staffing:turnover_pivotable", turnover_pivotable, {}, True),
             ("staffing:turnover_pivotable_range", turnover_pivotable, {"start_year": str(current_fiscal_year - 1), "end_year": str(current_fiscal_year)}, True),
+            ("staffing:turnover_pivotable_range", turnover_pivotable, {"start_year": str(current_fiscal_year - 2), "end_year": str(current_fiscal_year)}, True),
+            ("staffing:turnover_pivotable_range", turnover_pivotable, {"start_year": str(current_fiscal_year - 3), "end_year": str(current_fiscal_year)}, True),
             ("staffing:graph_profile_rates", graph_profile_rates, {}, True),
             ("leads:graph_leads_pipe", graph_leads_pipe, {}, True),
             ("people:graph_people_count", graph_people_count, {}, True),
