@@ -2186,13 +2186,15 @@ def turnover_pivotable(request, year=None):
     if current_subsidiary:
         subsidiaries = subsidiaries.filter(id=current_subsidiary.id)
 
+    span = min(5, int(request.GET.get("span", 1)))
+
     years = get_fiscal_years_from_qs(missions, "lead__creation_date")
 
     if year is None and years:
         year = years[-1]
     year = int(year)
     start = date(year, month, 1)
-    end = date(year + 1, month, 1)
+    end = date(year + span, month, 1)
     end = min(end, date.today().replace(day=1))
     missions = missions.filter(timesheet__working_date__gte=start, timesheet__working_date__lt=end)
 
