@@ -91,6 +91,7 @@ class Subsidiary(AbstractCompany):
     """Internal company / organisation unit"""
     payment_description = models.TextField(_("Payment condition description"), blank=True, null=True)
     iban = models.CharField(_("IBAN"), max_length=34, blank=True, null=True)
+    bic = models.CharField(_("BIC"), max_length=11, blank=True, null=True)
     commercial_name = models.CharField(_("Commercial name"), max_length=200)
 
     class Meta:
