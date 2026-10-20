@@ -1,4 +1,4 @@
-{% load pydici_filters %}<?xml version='1.0' encoding='UTF-8'?>
+{% load pydici_filters %}{% load i18n %}<?xml version='1.0' encoding='UTF-8'?>
 <!-- pydici ERP - Factur-X compliant XML file to be embedded in PDF/A3 invoice file
      {# Context : bill (ClientBill) #}
      {% load l10n %}
@@ -34,6 +34,16 @@
             <ram:Content>{{ bill.lead.subsidiary.payment_description }}</ram:Content>
             <ram:SubjectCode>PMD</ram:SubjectCode>
         </ram:IncludedNote>
+        {% endlocalize %}
+        <ram:IncludedNote>
+            <ram:Content>{% trans "Legal flat-rate charge is applied for recovery costs" %}</ram:Content>
+            <ram:SubjectCode>PMT</ram:SubjectCode>
+        </ram:IncludedNote>
+        <ram:IncludedNote>
+            <ram:Content>{% trans "Payment without a discount" %}</ram:Content>
+            <ram:SubjectCode>AAB</ram:SubjectCode>
+        </ram:IncludedNote>
+        {% localize off %}
     </rsm:ExchangedDocument>
 
     <rsm:SupplyChainTradeTransaction>
