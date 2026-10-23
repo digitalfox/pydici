@@ -2583,7 +2583,7 @@ def graph_work_backlog(request):
     leads_qs = Lead.objects.active()
     if subsidiary:
         leads_qs = leads_qs.filter(subsidiary=subsidiary)
-    backlog["commercial"] = float(leads_qs.annotate(count=Count("mission")).filter(count=0).aggregate(Sum("sales")).get("sales__sum", 0)) * 1000
+    backlog["commercial"] = float(leads_qs.annotate(count=Count("mission")).filter(count=0).aggregate(Sum("sales")).get("sales__sum", 0) or 0) * 1000
 
     if capacity > 0:
         graph_data.append([_("commercial backlog"), round(backlog["commercial"]/capacity, 1) ])
