@@ -401,7 +401,7 @@ def check_missions_charge_multiple(missions, month):
 
 def check_holiday_balance_overflow(missions, consultant, month):
     offending_holiday_balances = []
-    for balance in HolidayBalance.objects.filter(consultant=consultant):
+    for balance in HolidayBalance.objects.filter(consultant=consultant, balance_date__lte=month):
         forecasted_balance = balance.forecast_balance(month)
         if forecasted_balance < 0:
             # Check if downstream balance compensate excess
