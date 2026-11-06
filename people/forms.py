@@ -50,7 +50,7 @@ class ConsultantTagChoices(TagChoices):
     def get_queryset(self):
         qs = super(ConsultantTagChoices, self).get_queryset()
         if self.consultant:
-            qs = qs.exclude(lead__id=self.consultant.id)  # Exclude existing tags
+            qs = qs.exclude(consultant__id=self.consultant.id)  # Exclude existing tags
         return qs
 
 
