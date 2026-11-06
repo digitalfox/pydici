@@ -149,7 +149,8 @@ def search(request):
         for word in words:
             missions = missions.filter(Q(deal_id__icontains=word) |
                                        Q(client_deal_id__icontains=word) |
-                                       Q(description__icontains=word))
+                                       Q(description__icontains=word) |
+                                       Q(marketing_product__description__icontains=word))
         if subsidiary:
             missions = missions.filter(subsidiary=subsidiary)
         missions = missions.select_related("lead__client__organisation__company")[:max_record]
