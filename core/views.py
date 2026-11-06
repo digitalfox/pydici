@@ -29,7 +29,7 @@ from leads.models import Lead, Activity
 from people.models import Consultant
 from crm.models import Company, Contact
 from crm.utils import get_subsidiary_from_session
-from staffing.models import Mission, FinancialCondition, Staffing, Timesheet
+from staffing.models import Mission, FinancialCondition, Staffing, Timesheet, MarketingProduct
 from billing.models import ClientBill
 from expense.models import Expense
 from people.views import consultant_home
@@ -65,7 +65,7 @@ def search(request):
     words = request.GET.get("q", "")
     words = words.split()[:10]  # limits search to 10 words
     words = [w for w in words if len(w) > 1]  # remove one letter words
-    consultants = companies = contacts = leads = active_missions = archived_missions = bills = tags = activities = None
+    consultants = companies = contacts = leads = active_missions = archived_missions = marketing_products = bills = tags = activities = None
     max_record = 50
     more_record = False  # Whether we have more records
     subsidiary = get_subsidiary_from_session(request)
@@ -173,6 +173,12 @@ def search(request):
             else:
                 archived_missions.append(mission)
 
+        # Marketing products
+        marketing_products = MarketingProduct.objects.filter(active=True)
+        for word in words:
+            marketing_products = marketing_products.filter(Q(description__icontains=word) |
+                                                           Q(code=word))
+
         # Bills
         bills = ClientBill.objects.all()
         for word in words:
@@ -199,6 +205,7 @@ def search(request):
                    "tags": tags,
                    "active_missions": active_missions,
                    "archived_missions": archived_missions,
+                   "marketing_products": marketing_products,
                    "bills": bills,
                    "more_record": more_record,
                    "user": request.user})

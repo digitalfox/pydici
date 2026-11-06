@@ -66,6 +66,19 @@
     {% endif %}
 </div>
 
+{% if marketing_products %}
+<div class="row">
+    <div class="col-12">
+        <h2>{% trans "Marketing products" %}</h2>
+        <ul class="row icon-list">
+        {% for marketing_product in marketing_products %}
+            <li class="col-12 col-sm-12 col-md-6 col-lg-4 bi bi-chevron-right"><a href="{% url 'staffing:missions' %}?marketing_product={{ marketing_product.id }}">{{ marketing_product }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endif %}
 {% if leads %}
 <div class="row">
     <div class="col-12">
