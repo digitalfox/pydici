@@ -2555,8 +2555,6 @@ def graph_work_backlog(request):
     month = today.replace(day=1)
     next_month = nextMonth(month)
     # estimate won backlog
-    holidays_days = PublicHoliday.objects.filter(day__gte=month, day__lte=next_month).values_list("day", flat=True)
-    month_days = working_days(month, holidays=holidays_days)
     missions_qs = Mission.objects.filter(active=True, nature="PROD", price__gt=0)
     if subsidiary:
         missions_qs = missions_qs.filter(subsidiary=subsidiary)

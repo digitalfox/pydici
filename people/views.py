@@ -3,7 +3,7 @@ Pydici people views. Http request are processed here.
 @author: Sébastien Renard (sebastien.renard@digitalfox.org)
 @license: AGPL v3 or newer (http://www.gnu.org/licenses/agpl-3.0.html)
 """
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import json
 from dataclasses import dataclass
 
@@ -192,6 +192,50 @@ def consultants_tasks(request):
         consultants = consultants.filter(company=subsidiary)
     return render(request, "people/consultants_tasks.html",
                   {"consultants": consultants})
+
+
+@pydici_non_public
+@pydici_feature("reports")
+def consultant_pivotable(request, consultant_id=None):
+    """Pivot table for a given consultant with detail"""
+    if not request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # This view should only be accessed by ajax request. Redirect lost users
+        return redirect("people:consultant_home_by_id", consultant_id)
+    data = []
+    dateFormat = "%Y%m%d"
+    startDate = endDate = None
+    try:
+        startDate = request.GET.get("start")
+        endDate = request.GET.get("end", None)
+        if startDate:
+            startDate = datetime.strptime(startDate, dateFormat)
+        else:
+            startDate = datetime.now() - timedelta(365)  # Default to 1 year.
+        if endDate:
+            endDate = datetime.strptime(endDate, dateFormat)
+        else:
+            endDate = datetime.today()
+    except ValueError:
+        pass
+
+    try:
+        consultant = Consultant.objects.get(id=consultant_id)
+    except Consultant.DoesNotExist:
+        raise Http404()
+
+    # Get all missions where this consultant was involved
+    missions = Mission.objects.filter(Q(timesheet__consultant=consultant, timesheet__working_date__gte=startDate) |
+                                      Q(staffing__consultant=consultant, staffing__staffing_date__gte=startDate))
+    missions = missions.distinct()
+    for mission in missions:
+        missionData = mission.pivotable_data(startDate=startDate, endDate=endDate, filter_on_consultant=consultant)
+        data.extend(missionData)
+
+    return render(request, "people/consultant_pivotable.html", {"data": json.dumps(data),
+                                                                "derivedAttributes": [],
+                                                                "consultant": consultant,
+                                                                "startDate": startDate,
+                                                                "endDate": endDate })
 
 
 @pydici_non_public

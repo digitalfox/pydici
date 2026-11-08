@@ -444,13 +444,16 @@ class Mission(models.Model):
         else:
             return None
 
-    def pivotable_data(self, startDate=None, endDate=None):
+    def pivotable_data(self, startDate=None, endDate=None, filter_on_consultant=None):
         """Compute raw data for pivot table on that mission"""
         # TODO: factorize with staffing.views.mission_timesheet
         # TODO: denormalize by adding done/planned as a type column and move days/amount in values columns
         data = []
         mission_id = self.mission_id()
         mission_name = self.short_name()
+        client = self.lead.client if self.lead else "-"
+        client_company = self.lead.client.organisation.company if self.lead else "-"
+        client_organisation = self.lead.client.organisation if self.lead else "-"
         current_month = date.today().replace(day=1)  # Current month
         subsidiary = str(self.subsidiary)
         consultant_rates = self.consultant_rates()
@@ -469,7 +472,10 @@ class Mission(models.Model):
         timesheetMonths = list(timesheets.dates("working_date", "month"))
         staffingMonths = list(staffings.dates("staffing_date", "month"))
 
-        for consultant in self.consultants():
+        consultants = self.consultants()
+        if filter_on_consultant:
+            consultants = [filter_on_consultant]
+        for consultant in consultants:
             consultant_name = str(consultant)
             timesheet_data = dict(timesheets.filter(consultant=consultant).annotate(month=TruncMonth("working_date")).values_list("month").annotate(Sum("charge")).order_by("month"))
             staffing_data = dict(staffings.filter(consultant=consultant).values_list("staffing_date").annotate(Sum("charge")).order_by("staffing_date"))
@@ -479,6 +485,10 @@ class Mission(models.Model):
                               gettext("mission name"): mission_name,
                               gettext("marketing product"): marketing_product,
                               gettext("consultant"): consultant_name,
+                              gettext("lead"): str(self.lead or "-"),
+                              gettext("client"): str(client),
+                              gettext("client company"): str(client_company),
+                              gettext("client organisation"): str(client_organisation),
                               gettext("subsidiary"): subsidiary,
                               gettext("billing mode"): billing_mode,
                               gettext("date"): month.strftime("%Y/%m"),

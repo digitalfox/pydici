@@ -661,7 +661,7 @@ def company_pivotable(request, company_id=None):
         if startDate:
             startDate = datetime.strptime(startDate, dateFormat)
         else:
-            startDate = datetime.now() - timedelta(365)  # Default to 1 year. It is often enough.
+            startDate = datetime.now() - timedelta(365)  # Default to 1 year.
         if endDate:
             endDate = datetime.strptime(endDate, dateFormat)
         else:
@@ -677,11 +677,8 @@ def company_pivotable(request, company_id=None):
     if subsidiary:
         leads = leads.filter(subsidiary=subsidiary)
     for lead in leads:
-        clientName = str(lead.client)
         for mission in lead.mission_set.all():
             missionData = mission.pivotable_data(startDate=startDate, endDate=endDate)
-            for item in missionData:
-                item[_("client")] = clientName
             data.extend(missionData)
 
     derivedAttributes = []

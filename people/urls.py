@@ -14,6 +14,7 @@ people_urls = [
     re_path(r'^detail/consultant/(?P<consultant_id>\d+)/$', v.consultant_detail, name="consultant_detail"),
     re_path(r'^achievements/consultant/(?P<consultant_id>\d+)/$', v.consultant_achievements, name="consultant_achievements"),
     re_path(r'^profile/consultant/(?P<consultant_id>\d+)/$', v.consultant_profile, name="consultant_profile"),
+    re_path(r'^pivotable/consultant/(?P<consultant_id>\d+)/$', v.consultant_pivotable, name="consultant_pivotable"),
     re_path(r'^detail/subcontractor/(?P<consultant_id>\d+)/$', v.subcontractor_detail, name="subcontractor_detail"),
     re_path(r'^tasks/consultants_tasks', v.consultants_tasks, name="consultants_tasks"),
     re_path(r'^tag/add/(?P<consultant_id>\d+)/(?P<tag_id>\d+)?$', v.add_tag, name="add_tag"),

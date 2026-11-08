@@ -6,6 +6,7 @@
 {% block extrajs %}
     {% include "core/_billboard.html" %}
     <script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+    {% include "core/_pivotable_header.html" %}
 {% endblock %}
 
 {% block title %}{% trans "Consultant " %}{{ consultant }}{% endblock %}
@@ -39,6 +40,7 @@
         {% endif %}
         {% if not consultant.subcontractor %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-missions" data-tab-url="{% url 'staffing:consultant_missions' consultant_id=consultant.id  %}"><i class="bi-list-ul"></i> <div class="d-none d-md-inline">{% trans "Missions" %}</div></button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-reporting" data-tab-url="{% url 'people:consultant_pivotable' consultant.id %}"><i class="bi-graph-up"></i> <div class="d-none d-md-inline">{% trans "Reporting" %}</div></button></li>
             {% if consultant.productive %}
         <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" type="button" role="tab" data-bs-target="#tab-achievements" data-tab-url="{% url 'people:consultant_achievements' consultant.id %}"><i class="bi-trophy"></i> <div class="d-none d-md-inline">{% trans "Achievements" %}</div></button></li>
             {% endif %}
@@ -55,6 +57,7 @@
     <div id="tab-timesheet" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-staffing" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-missions" class="tab-pane fade" role="tabpanel"></div>
+    <div id="tab-reporting" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-achievements" class="tab-pane fade" role="tabpanel"></div>
     <div id="tab-profile" class="tab-pane fade" role="tabpanel"></div>
 </div>
