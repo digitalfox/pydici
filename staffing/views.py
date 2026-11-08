@@ -2565,8 +2565,13 @@ def graph_work_backlog(request):
             _done_days, done_amount = mission.done_work_period(None, today)
             backlog[backlog_name] += float((mission.price or 0) * 1000) - done_amount
 
-    # Estimate capacity
-    consultant_holidays = dict(Timesheet.objects.filter(mission__nature="HOLIDAYS", working_date__gte=today, working_date__lt=next_month).order_by("consultant").values_list("consultant").annotate(Sum("charge")))
+    # Estimate capacity based on current month and two previous month
+    capacity_start_date = previousMonth(previousMonth(month))
+    holidays_days = PublicHoliday.objects.filter(day__gte=capacity_start_date, day__lte=next_month).values_list("day", flat=True)
+    month_days = 0
+    for m in (previousMonth(previousMonth(month)), previousMonth(month), month):
+        month_days += working_days(month, holidays=holidays_days)
+    consultant_holidays = dict(Timesheet.objects.filter(mission__nature="HOLIDAYS", working_date__gte=capacity_start_date, working_date__lt=next_month).order_by("consultant").values_list("consultant").annotate(Sum("charge")))
     consultants = Consultant.objects.filter(active=True, productive=True)
     if subsidiary:
         consultants = consultants.filter(company=subsidiary)
@@ -2578,7 +2583,8 @@ def graph_work_backlog(request):
             capacity += daily_rate_obj * prod_rate_obj * (month_days - consultant_holidays.get(consultant.id ,0))
         except AttributeError:
             pass  # At least one rate objective is missing
-
+    # Average capacity for one month
+    capacity = capacity / 3
     # Active leads without missions
     leads_qs = Lead.objects.active()
     if subsidiary:
