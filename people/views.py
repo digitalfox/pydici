@@ -342,7 +342,7 @@ def consultant_achievements(request, consultant_id):
                                         value=max_mission_per_month_qs["id__count"],
                                         link=max_mission_per_month_link))
 
-    max_monthly_daily_rate = FinancialCondition.objects.filter(mission__lead__state="WON", consultant=consultant) \
+    max_monthly_daily_rate = FinancialCondition.objects.filter(mission__lead__state="WON", consultant=consultant, mission__timesheet__consultant=consultant) \
         .exclude(mission__timesheet__working_date=None).annotate(month=TruncMonth("mission__timesheet__working_date")) \
         .values("month").annotate(Avg("daily_rate")).order_by("-daily_rate__avg").first()
     if max_monthly_daily_rate:
