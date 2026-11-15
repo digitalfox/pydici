@@ -1825,7 +1825,7 @@ def rates_report(request):
 
 @pydici_non_public
 @pydici_feature("reports")
-def missions_report(request, year=None, nature="HOLIDAYS"):
+def missions_report(request, start_year=None, end_year=None, nature="HOLIDAYS"):
     """Reports about holidays or non-prod missions"""
     data = []
     month = int(get_parameter("FISCAL_YEAR_MONTH"))
@@ -1848,14 +1848,24 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
     if not years:
         return HttpResponse()
 
-    if year is None and years:
-        year = years[-1]
+    if start_year is None:
+        if years:
+            year = years[-1]
+        else:
+            year = date.today().year
+    else:
+        year = int(start_year[0:4])
 
-    if year != "all":
-        year = int(year)
-        start = date(year, month, 1)
-        end = date(year+1, month, 1)
-        timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
+    if end_year is None:
+        span = 1
+    else:
+        span = int(end_year[0:4]) - year
+        span = min(span, 5)
+        span = max(span, 1)
+
+    start = date(year, month, 1)
+    end = date(year + span, month, 1)
+    timesheets = timesheets.filter(working_date__gte=start, working_date__lt=end)
 
     timesheets =timesheets.annotate(month=TruncMonth("working_date"))
     timesheets = timesheets.values("month", "mission__description", "consultant__name", "mission__nature", "consultant__profil__name", "consultant__company__name").annotate(Sum("charge")).order_by("month")
@@ -1875,8 +1885,8 @@ def missions_report(request, year=None, nature="HOLIDAYS"):
         })
 
     return render(request, "staffing/missions_report.html", {"data": json.dumps(data),
-                                                             "years": years,
-                                                             "selected_year": year,
+                                                             "start_date": start,
+                                                             "end_date": end,
                                                              "nature": nature,
                                                              "derivedAttributes": [],})
 
