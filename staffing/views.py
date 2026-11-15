@@ -2604,6 +2604,8 @@ def graph_work_backlog(request):
         graph_data.append([_("planned backlog"), round(backlog["sent"]/capacity, 1) ])
         graph_data.append([_("won backlog"), round(backlog["won"]/capacity, 1) ])
         backlog_max = max(4, *[i[1] for i in graph_data])
+    else:
+        return HttpResponse()
 
     return render(request, "staffing/graph_mission_backlog.html",
                   {"work_backlog_data": json.dumps(graph_data),
