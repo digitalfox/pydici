@@ -36,7 +36,7 @@
 
             // Preset definition
             function done_by_mission() {
-                var rows = ["{% trans 'mission id' %}"];
+                var rows = ["{% trans 'mission id' %}", "{% trans 'mission name' %}"];
                 var cols = ["{% trans 'date' %}"];;
                 drawPivot(data, rows, cols, "Stacked Bar Chart", '{% trans "Sum" %}', ['{% trans "done (€)" %}']);
             }
