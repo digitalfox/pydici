@@ -28,6 +28,7 @@
         <button type="button" class="btn btn-primary active" onclick="current_month_estimation();">{% trans "This month's estimation" %}</button>
         <button type="button" class="btn btn-primary" onclick="current_estimation_without_this_month_days();">{% trans "This month's estimation without current month days" %}</button>
         <button type="button" class="btn btn-primary" onclick="from_uploaded_balances();">{% trans "Uploaded balances information" %}</button>
+        <button type="button" class="btn btn-primary" onclick="planned_holidays();">{% trans "Planned holidays" %}</button>
     </div>
 
     <div class="table-responsive mt-3">
@@ -59,7 +60,7 @@
             var cols = ["{% trans 'type' %}"];
             var options = {};
             options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"])};
-            options['exclusions'] = { '{% trans "origin" %}': ['{% trans "external system" %}', '{% trans "computed without taken days" %}'] };
+            options['inclusions'] = { '{% trans "origin" %}': ['{% trans "computed" %}'] };
             drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
         }
         function current_estimation_without_this_month_days() {
@@ -67,7 +68,7 @@
             var cols = ["{% trans 'type' %}"];
             var options = {};
             options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"])};
-            options['exclusions'] = { '{% trans "origin" %}': ['{% trans "external system" %}', '{% trans "computed" %}'] };
+            options['inclusions'] = { '{% trans "origin" %}': ['{% trans "computed without taken days" %}'] };
             drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
         }
         function from_uploaded_balances() {
@@ -75,7 +76,15 @@
             var cols = ["{% trans 'type' %}"];
             var options = {};
             options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"])};
-            options['exclusions'] = { '{% trans "origin" %}': ['{% trans "computed" %}', '{% trans "computed without taken days" %}'] };
+            options['inclusions'] = { '{% trans "origin" %}': ['{% trans "external system" %}']  };
+            drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
+        }
+        function planned_holidays() {
+            var rows = ['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"];
+            var cols = ["{% trans 'type' %}"];
+            var options = {};
+            options['sorters'] = {"type": $.pivotUtilities.sortAs(['{% trans "subsidiary" %}', '{% trans "consultant" %}', "{% trans 'balance date' %}"])};
+            options['inclusions'] = { '{% trans "origin" %}': ['{% trans "computed from planned holidays" %}'] };
             drawPivot(data, rows, cols, "Heatmap", '{% trans "Sum" %}', ["{% trans 'balance' %}"], options);
         }
 

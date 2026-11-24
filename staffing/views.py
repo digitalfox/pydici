@@ -1689,6 +1689,18 @@ def holiday_balances_report(request):
             _("type"): balance.balance_type.name,
             _("origin"): _("computed without taken days")
         })
+        forecasted_holidays = Timesheet.objects.filter(consultant=balance.consultant, working_date__gt=nextMonth(date.today()),
+            mission__in=balance.balance_type.missions.all()).aggregate(Sum('charge'))['charge__sum'] or 0
+        if balance.balance_type.upstream_balance_type:
+            forecasted_holidays = 0 # Don't count twice.
+        data.append({
+            _("consultant"): str(balance.consultant),
+            _("subsidiary"): str(balance.consultant.company),
+            _("balance") : forecasted_holidays,
+            _("balance date"): _("Starting next month"),
+            _("type"): balance.balance_type.name,
+            _("origin"): _("computed from planned holidays")
+        })
 
     return render(request, "staffing/holiday_balances_report.html",
         {"data": json.dumps(data), "filter": filter, "filter_form_helper": ConsultantFilterFormHelper(), "user": request.user})
