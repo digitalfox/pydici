@@ -544,9 +544,14 @@ class HolidayBalance(models.Model):
 
     def forecast_balance(self, date, consider_upstream=True, consider_taken_days=True, exclude_current_month=False):
         """Rought estimation of forecast balance at a given date"""
-        days_off = Staffing.objects.filter(consultant=self.consultant, mission__in=self.balance_type.excluded_missions.all(),
-            staffing_date__gte=self.balance_date, staffing_date__lte=date).aggregate(Sum("charge"))['charge__sum'] or 0
-        month_span = round((date - self.balance_date).days / 30)
+        days_off = Staffing.objects.filter(consultant=self.consultant, mission__in=self.balance_type.excluded_missions.all(), staffing_date__gte=self.balance_date)
+        if exclude_current_month:
+            days_off = days_off.filter(staffing_date__lt=date)
+            month_span = round((date - self.balance_date).days / 30) - 1
+        else:
+            days_off = days_off.filter(staffing_date__lte=date)
+            month_span = round((date - self.balance_date).days / 30)
+        days_off = days_off.aggregate(Sum("charge"))['charge__sum'] or 0
         # very rough approximation of partial worktime ratio guessed from forecasted days off
         partial_worktime_ratio = 1 - (days_off / (month_span * 20) if month_span > 0 else 0)
         balance = self.balance + self.balance_type.monthly_increment * month_span * partial_worktime_ratio
